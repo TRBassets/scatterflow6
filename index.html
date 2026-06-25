@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScatterFlow for Blender | Fast Ecosystem Creation</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #000000;
+      --bg-accent: #09090b;
+      --text-main: #a1a1aa;
+      --text-heading: #ffffff;
+      --glass: rgba(10, 10, 12, 0.7);
+      --border-glow: rgba(255, 255, 255, 0.08);
+      --transition-main: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .main-canvas {
+      width: 100%;
+      max-width: 800px;
+      background-color: var(--bg-accent);
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid #1f1f22;
+      border-right: 1px solid #1f1f22;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: var(--transition-main);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-weight: 700;
+      color: var(--text-heading);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 2.0rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+      color: #ffffff;
+      z-index: 2;
+      position: relative;
+    }
+
+    h4 {
+      font-size: 1.05rem;
+      margin-bottom: 5px;
+      color: #e4e4e7;
+    }
+
+    p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      font-weight: 300;
+      margin-bottom: 1.5rem;
+      z-index: 2;
+      position: relative;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: var(--text-heading);
+      color: var(--bg-color);
+      padding: 14px 30px;
+      font-size: 1.05rem;
+      font-weight: 500;
+      text-decoration: none;
+      border-radius: 40px;
+      transition: var(--transition-main);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(255, 255, 255, 0.25);
+      background-color: #f4f4f5;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: #fff;
+      margin-right: 5px;
+      margin-bottom: 10px;
+      font-weight: 500;
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge.soon {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      align-self: flex-start;
+    }
+
+    .section {
+      position: relative;
+      padding: 60px 0;
+      width: 100%;
+      display: block;
+      clear: both;
+    }
+
+    .hero {
+      padding: 80px 20px 40px 20px;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: radial-gradient(circle at center top, rgba(255,255,255,0.03) 0%, transparent 60%);
+    }
+
+    .text-card {
+      padding: 0 40px;
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .text-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 60px 20px 40px 20px;
+      opacity: 0.5;
+    }
+
+    .text-divider::before,
+    .text-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+    }
+
+    .text-divider span {
+      padding: 0 15px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #a1a1aa;
+      font-weight: 600;
+    }
+
+    .video-container {
+      width: 100%;
+      max-width: 760px;
+      aspect-ratio: 16 / 9;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 10;
+      background: #000;
+    }
+
+    .video-container iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hero-title-gradient {
+      background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .img-container {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-glow);
+      transition: var(--transition-main);
+      background-color: #18181b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .img-container img,
+.img-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: var(--transition-main);
+}
+
+.img-container:hover img,
+.img-container:hover video {
+  transform: scale(1.03);
+}
+
+    .one-click-video {
+      object-position: 1% center;
+    }
+
+    .aspect-wide {
+      aspect-ratio: 16 / 7;
+      height: auto;
+    }
+
+    .aspect-standard {
+      aspect-ratio: 4 / 3;
+      height: auto;
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      align-items: stretch;
+      padding: 0 30px;
+      margin-bottom: 40px;
+    }
+
+    .split-text {
+      text-align: left;
+    }
+
+    .instant-ecosystem-media {
+      align-self: stretch;
+      aspect-ratio: auto;
+      min-height: 360px;
+    }
+
+    .slider-wrapper {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .horizontal-slider {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 15px;
+      padding: 0 20px 20px 20px;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+      width: 100%;
+    }
+
+    .horizontal-slider::-webkit-scrollbar {
+      display: none;
+    }
+
+    .slider-card {
+      flex: 0 0 280px;
+      scroll-snap-align: start;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-glow);
+      background-color: #18181b;
+      aspect-ratio: 4 / 3;
+      height: auto;
+    }
+
+    .slider-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition-main);
+    }
+
+    .slider-card:hover img {
+      transform: scale(1.08);
+      filter: brightness(1.1);
+    }
+
+    .slider-label {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+      padding: 6px 14px;
+      border-radius: 20px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .swipe-hint {
+      text-align: right;
+      padding-right: 20px;
+      font-size: 0.9rem;
+      color: #52525b;
+      margin-top: -10px;
+      margin-bottom: 20px;
+    }
+
+    .slider-arrow {
+      position: absolute;
+      top: 40%;
+      transform: translateY(-50%);
+      background: rgba(10, 10, 12, 0.8);
+      border: 1px solid var(--border-glow);
+      color: white;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 20;
+      font-size: 1.2rem;
+      backdrop-filter: blur(4px);
+      transition: var(--transition-main);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .slider-arrow:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-50%) scale(1.05);
+    }
+
+    .arrow-left {
+      left: 10px;
+    }
+
+    .arrow-right {
+      right: 10px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 0 20px;
+      margin-bottom: 25px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+
+    .scatter-highlight {
+      background: radial-gradient(circle at center top, rgba(30, 30, 35, 0.4) 0%, var(--bg-accent) 100%);
+      border-top: 1px solid var(--border-glow);
+      border-bottom: 1px solid var(--border-glow);
+      padding: 80px 0;
+      margin: 0;
+      width: 100%;
+      display: block;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 20px;
+      transition: var(--transition-main);
+      height: 100%;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-5px);
+    }
+
+    .feature-card p {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #a1a1aa;
+      margin: 0;
+      flex-grow: 1;
+    }
+
+    .feature-card .aspect-standard {
+      width: 100%;
+      margin: 0 0 20px 0;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .testimonial-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition-main);
+    }
+
+    .testimonial-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+    }
+
+    .stars {
+      color: #fbbf24;
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+    }
+
+    .testimonial-text {
+      font-size: 0.95rem;
+      font-style: italic;
+      color: #d4d4d8;
+      margin-bottom: 20px;
+      flex-grow: 1;
+      line-height: 1.6;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testimonial-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #3f3f46;
+    }
+
+    .author-info h4 {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .author-info span {
+      font-size: 0.8rem;
+      color: #a1a1aa;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: minmax(260px, auto);
+      gap: 15px;
+      padding: 0 20px;
+    }
+
+    .bento-grid.two-col {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .bento-card {
+      background: #111;
+      border: 1px solid var(--border-glow);
+      border-radius: 16px;
+      padding: 25px;
+      transition: var(--transition-main);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      justify-content: flex-end;
+      min-height: 260px;
+    }
+
+    .bento-card:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .bento-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.08) 100%);
+      z-index: 1;
+      transition: var(--transition-main);
+      pointer-events: none;
+    }
+
+    .bento-card:hover::before {
+      background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.26) 60%, rgba(0,0,0,0.04) 100%);
+    }
+
+    .bento-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+    }
+
+    .bento-content p {
+      font-size: 0.95rem;
+      margin-bottom: 0;
+      color: #d4d4d8;
+    }
+
+    .bento-content h3 {
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .bento-img-full {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      z-index: 0;
+      transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      display: block;
+    }
+
+    .bento-card:hover .bento-img-full {
+      transform: scale(1.05);
+    }
+
+    .video-card video {
+      pointer-events: none;
+    }
+
+    .video-card {
+      min-height: 260px;
+      overflow: hidden;
+    }
+
+    .col-span-2 {
+      grid-column: span 2;
+    }
+
+    .row-span-2 {
+      grid-row: span 2;
+    }
+
+    .mask-card {
+      grid-column: 3;
+      grid-row: span 2;
+    }
+
+    .preset-pill-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 25px;
+      padding: 0 20px;
+    }
+
+    .preset-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      padding: 10px 24px;
+      color: #e4e4e7;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      backdrop-filter: blur(10px);
+      transition: var(--transition-main);
+      cursor: default;
+    }
+
+    .preset-pill:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .water-preset-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      padding: 0 20px;
+      margin-bottom: 18px;
+    }
+
+    .water-card {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-glow);
+      aspect-ratio: 9 / 16;
+      cursor: pointer;
+      transition: var(--transition-main);
+    }
+
+    .water-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.08) 100%);
+      z-index: 1;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .water-card:hover {
+      border-color: rgba(255,255,255,0.4);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+
+    .water-card:hover::before {
+      opacity: 0;
+    }
+
+    .water-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      transition: transform 0.4s ease, filter 0.4s ease;
+    }
+
+    .water-card:hover img {
+      transform: scale(1.1);
+      filter: brightness(1.08);
+    }
+
+    .water-label {
+      position: absolute;
+      bottom: 15px;
+      left: 0;
+      width: 100%;
+      padding: 0 8px;
+      text-align: center;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      z-index: 2;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      pointer-events: none;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      transition: transform 0.38s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease;
+      will-change: transform, opacity;
+    }
+
+    .water-card:hover .water-label {
+      transform: translateY(130%);
+      opacity: 0;
+    }
+
+    .disclaimer-note,
+    .performance-disclaimer {
+      margin-left: 20px;
+      margin-right: 20px;
+      padding: 16px 20px;
+      text-align: center;
+      color: #a1a1aa;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      font-weight: 400;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .disclaimer-note {
+      margin-top: 0;
+      margin-bottom: 40px;
+    }
+
+    .performance-disclaimer {
+      margin-top: 0;
+      margin-bottom: 0;
+      font-size: 0.95rem;
+    }
+
+    .collaboration-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 0 20px;
+    }
+
+    .collaborator-card {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      transition: var(--transition-main);
+    }
+
+    .collaborator-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .collaborator-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #3f3f46;
+      background: #18181b;
+    }
+
+    .collaborator-info h3 {
+      margin: 0 0 3px;
+      font-size: 1rem;
+    }
+
+    .collaborator-info p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: #a1a1aa;
+    }
+
+    .collaborator-contribution {
+      color: #e4e4e7;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .feature-column {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feature-column h3 {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .feature-column p {
+      text-align: center;
+      font-size: 1rem;
+      color: #a1a1aa;
+    }
+
+    .vault-ui-container {
+      background: #050508;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 30px;
+      margin: 0 20px;
+      box-shadow: inset 0 20px 50px rgba(0,0,0,0.6), 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .vault-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .vault-header h3 {
+      font-size: 1.4rem;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+
+    .vault-header p {
+      font-size: 0.95rem;
+      color: #a1a1aa;
+      margin: 0;
+    }
+
+    .library-wrapper {
+      margin: 0;
+    }
+
+    /* Keeps the vault hierarchy clear without changing the page's visual language. */
+    .vault-category-section {
+      margin-bottom: 20px;
+    }
+
+    .vault-category-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .vault-category-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 12px 0;
+      color: #a1a1aa;
+    }
+
+    .vault-category-heading::before,
+    .vault-category-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.22), transparent);
+    }
+
+    .vault-category-heading span {
+      white-space: nowrap;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
+
+    .category-tabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 12px;
+      padding-bottom: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: #3f3f46 transparent;
+      margin-bottom: 20px;
+    }
+
+    .category-tabs::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .category-tabs::-webkit-scrollbar-thumb {
+      background-color: #3f3f46;
+      border-radius: 10px;
+    }
+
+    .cat-card {
+      flex: 0 0 140px;
+      height: 100px;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: var(--transition-main);
+      background: #111;
+    }
+
+    .cat-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      transform: scale(1);
+    }
+
+    .cat-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      transition: background 0.3s ease;
+      z-index: 1;
+    }
+
+    .cat-card:hover .cat-overlay {
+      background: rgba(0,0,0,0.3);
+    }
+
+    .cat-card.active {
+      border-color: #ffffff;
+      box-shadow: 0 0 15px rgba(255,255,255,0.15);
+    }
+
+    .cat-card.active .cat-overlay {
+      background: rgba(0,0,0,0.1);
+    }
+
+    .cat-card.active img {
+      transform: scale(1.08);
+    }
+
+    .cat-title {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .asset-display-area {
+      background: transparent;
+      border: none;
+      padding: 0;
+      min-height: 350px;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr;
+      position: relative;
+    }
+
+    .asset-grid-group {
+      grid-column: 1;
+      grid-row: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: scale(0.98);
+      transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+    }
+
+    .asset-grid-group.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: scale(1);
+      z-index: 2;
+    }
+
+    .asset-item-card {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-glow);
+      position: relative;
+      background: #000;
+      aspect-ratio: 1 / 1;
+      cursor: pointer;
+    }
+
+    .asset-item-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 1;
+      transition: all 0.3s ease;
+    }
+
+    .asset-item-card:hover img {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
+    .asset-item-title {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(transparent, rgba(0,0,0,0.9));
+      padding: 25px 10px 10px 10px;
+      color: white;
+      font-size: 0.85rem;
+      text-align: center;
+      font-weight: 500;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .cta-final {
+      background-color: var(--bg-color);
+      text-align: center;
+      padding: 80px 20px;
+      border-top: 1px solid var(--border-glow);
+      clear: both;
+    }
+
+
+
+    /* --- BENTO HOVER CLEAR VIEW --- */
+    .bento-content {
+      transition: transform 0.38s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease;
+      will-change: transform, opacity;
+    }
+
+    .bento-card:hover .bento-content {
+      transform: translateY(130%);
+      opacity: 0;
+    }
+
+    .bento-card:hover::before {
+      opacity: 0;
+    }
+
+    .bento-card:hover .bento-img-full {
+      transform: scale(1.08);
+      filter: brightness(1.08);
+    }
+
+    @media (max-width: 768px) {
+      .bento-grid,
+      .bento-grid.two-col {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .col-span-2 {
+        grid-column: span 2;
+      }
+
+      .row-span-2 {
+        grid-row: span 1;
+      }
+
+      .mask-card {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+
+      .water-preset-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .water-card {
+        aspect-ratio: 3 / 4;
+      }
+    }
+
+    @media (max-width: 650px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+      }
+
+      .split-grid,
+      .grid-2,
+      .grid-3,
+      .bento-grid,
+      .bento-grid.two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .col-span-2,
+      .row-span-2 {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+
+      .split-text {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .instant-ecosystem-media {
+        min-height: 280px;
+      }
+
+      .text-card {
+        padding: 0 20px;
+      }
+
+      .feature-column {
+        margin-bottom: 30px;
+      }
+
+      .slider-card {
+        flex: 0 0 240px;
+      }
+
+      .cat-card {
+        flex: 0 0 120px;
+        height: 85px;
+      }
+
+      .vault-ui-container {
+        padding: 15px;
+        margin: 0 10px;
+      }
+
+      .asset-grid-group {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .text-divider span {
+        font-size: 0.7rem;
+        padding: 0 10px;
+      }
+
+      .collaborator-card {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 12px;
+        padding: 13px 15px;
+      }
+
+      .collaborator-avatar {
+        width: 48px;
+        height: 48px;
+      }
+
+      .collaborator-contribution {
+        grid-column: 2;
+        grid-row: 2;
+        text-align: left;
+        white-space: normal;
+        font-size: 0.72rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-canvas">
+
+    <div class="section hero">
+      <div class="text-card reveal active">
+        <h1 class="hero-title-gradient">ScatterFlow</h1>
+      </div>
+
+      <div class="video-container reveal active">
+        <iframe
+          src="https://www.youtube.com/embed/vHxwFq9uMvY?autoplay=1&mute=1&loop=1&playlist=vHxwFq9uMvY"
+          title="ScatterFlow Trailer"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+
+    <div class="text-divider reveal"><span>Used by Blenders Top envirmonment artists</span></div>
+
+    <div class="section reveal" style="padding-top: 20px;">
+      <div class="grid-3">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Coming Soon."</p>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80" alt="Creator Avatar" class="testimonial-avatar" loading="lazy">
+            <div class="author-info">
+              <h4>CG Horizon</h4>
+              <span>300k+ YouTube Subs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Coming Soon."</p>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Creator Avatar" class="testimonial-avatar" loading="lazy">
+            <div class="author-info">
+              <h4>The 3D Forge</h4>
+              <span>Blender Educator</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">"Coming Soon."</p>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Creator Avatar" class="testimonial-avatar" loading="lazy">
+            <div class="author-info">
+              <h4>PolyMastery</h4>
+              <span>Environment Artist</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-divider reveal"><span>The ScatterFlow Pipeline</span></div>
+
+    <div class="section reveal" style="padding-top: 20px;">
+      <div class="text-card" style="max-width: 750px;">
+        <h2 style="font-size: 2.4rem; letter-spacing: -0.05em; margin-bottom: 30px;">One Addon. Endless Environments.</h2>
+
+<p style="font-size: 1.25rem; color: #e4e4e7; line-height: 1.7; margin-bottom: 25px;">
+  ScatterFlow was built to remove the hassle of relying on multiple addons from different companies just to create great environments.
+</p>
+
+<p style="font-size: 1.15rem; line-height: 1.7;">
+  It brings the essential tools for building, scattering, and refining environments into one streamlined Blender workflow—saving you time, money, and frustration.
+</p>
+
+      </div>
+    </div>
+
+    <div class="text-divider reveal"><span>Biomes System</span></div>
+
+    <div class="section reveal" style="padding-top: 20px;">
+      <div class="split-grid">
+        <div class="split-text">
+          <h2 style="text-align: left;">Instant, Production-Quality Biomes.</h2>
+          <p>Skip the tedious, repetitive work of manually placing grass, rocks, and trees.
+          <p>With ScatterFlow biomes, you can add complete, hand-crafted environments to your scenes with a single click.</p>
+          <p style="margin-bottom: 0;">Saving you time while bringing a higher level of detail and quality to your scenes.</p>
+        </div>
+
+        <div class="img-container instant-ecosystem-media">
+          <video
+            src="./assets\biomepagerendernewfinal-ezgif.com-gif-maker.mp4"
+            muted
+            loop
+            autoplay
+            playsinline
+            preload="metadata"
+            aria-label="Instant Ecosystem Creation">
+          </video>
+        </div>
+      </div>
+
+      <div class="grid-2" style="align-items: stretch; margin-top: 20px;">
+        <div class="feature-card">
+          <div class="img-container aspect-standard">
+            <img src=".\assets\pre setup.jpg" alt="Premade Ecosystems" loading="lazy">
+          </div>
+          <h3>Fully Pre-Configured</h3>
+          <p>Every biome is a complete environment out of the box, with accurate asset layering and natural variation.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="img-container aspect-standard">
+            <video
+              class="one-click-video"
+              src="./assets\oneclickworkflow-ezgif.com-gif-maker.mp4"
+              muted
+              loop
+              autoplay
+              playsinline
+              preload="metadata"
+              aria-label="One-Click Workflow">
+            </video>
+          </div>
+          <h3>One-Click Workflow</h3>
+          <p>No complex setup or trying to match individual assets by hand. Simply select your biome, click your target mesh, and let ScatterFlow build the base for you</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-divider reveal"><span>Biome Presets</span></div>
+
+    <div class="section reveal" style="padding-top: 20px;">
+      <h2>
+        30+ Premade Biomes
+        <span style="display: block; margin-top: 6px; font-size: 0.46em; font-weight: 500; letter-spacing: 0; color: #a1a1aa;">(and growing)</span>
+      </h2>
+
+      <div class="text-card">
+        <p style="margin-bottom: 30px;">From dense tropical forests and open meadows to harsh deserts—and even garbage-filled alleyways—ScatterFlow is the easiest way to quickly populate your scenes with ready-to-use environments.</p>
+      </div>
+
+      <div class="swipe-hint">Swipe to explore all 30+ biomes →</div>
+
+      <div class="slider-wrapper">
+        <button class="slider-arrow arrow-left" id="biomeLeft">❮</button>
+        <button class="slider-arrow arrow-right" id="biomeRight">❯</button>
+
+        <div class="horizontal-slider" id="biomeSlider">
+          <div class="slider-card">
+            <img src=".\assets\Forest Floor_V1.jpg" alt="Forest" loading="lazy">
+            <div class="slider-label">Forest Floor V1</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Tropical_V1.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Tropical V1</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Wild Meadow_V2.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Wild Meadow V2</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Desert_V1.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Desert V1</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Wetland_V1.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Wetland V1</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\ForestFloor_V3.jpg" alt="Tropical" loading="lazy">
+            <div class="slider-label">Forest Floor V3</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\WildClover Field.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Clover Field</div>
+          </div>
+
+
+          <div class="slider-card">
+            <img src=".\assets\Garbage Pile_V1.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Garbage Pile_V1</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Tropical_V2.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Tropical V2</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Wild Meadow_V3.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Wild Meadow V3</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Tundra.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Tundra V1</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Wetland_V2.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Wetland V2</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\BentGrass Lawn.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">BentGrass Lawn</div>
+          </div>
+
+
+          <div class="slider-card">
+            <img src=".\assets\Garbage Pile_V2.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Garbage Pile_V2</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Desert_V2.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Desert V2</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Forest Floor_V2.jpg" alt="Aquatic" loading="lazy">
+            <div class="slider-label">Forest Floor V2</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Dandelion Meadow.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Dandelion Meadow</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Bermuda Lawn.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Bermuda Lawn</div>
+          </div>
+
+
+          <div class="slider-card">
+            <img src=".\assets\Garbage Pile_V3.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Garbage Pile_V3</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Wild Meadow_V4.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Wild Meadow V4</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Wetland_V3.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Wetland V3</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Overgrown Wild Meadow.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Overgrown Meadow</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Dewberry Patch.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Dewberry</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\RyeGrass Lawn.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">RyeGrass Lawn</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Wasteland_V1.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Wasteland V1</div>
+          </div>
+
+
+          <div class="slider-card">
+            <img src=".\assets\Construction Debris_V1.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Construction Debris_V1</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Dry Wild Meadow.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Dry Meadow</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Overgrown Lawn.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Overgrown Lawn</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Wild Meadow.jpg" alt="Meadow" loading="lazy">
+            <div class="slider-label">Wild Meadow V1</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Fern Forest.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Fern Forest</div>
+          </div>
+
+
+
+          <div class="slider-card">
+            <img src=".\assets\Sparse Wild Meadow.jpg" alt="Wasteland" loading="lazy">
+            <div class="slider-label">Sparse Meadow</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="text-divider reveal"><span>Living Systems</span></div>
+
+    <div class="section reveal">
+  <h2>Living, Reactive Ecosystems.</h2>
+
+  <div class="grid-2" style="align-items: start; margin-top: 30px;">
+    <div class="feature-column">
+      <div class="img-container aspect-standard" style="margin-bottom: 20px;">
+        <video
+          src="./assets\WINDREDO-ezgif.com-gif-maker.mp4"
+          poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80"
+          muted
+          loop
+          autoplay
+          playsinline
+          preload="metadata"
+          aria-label="Procedural Wind Animation">
+        </video>
+      </div>
+
+  <h3>Procedural Wind</h3>
+  <p>True realism needs motion. Choose from three directional wind modes: <strong>Performance</strong> for speed, <strong>Hybrid</strong> for balance, or <strong>Realistic</strong> for the most lifelike movement.</p>
+  <p>Fine-tune the movement in seconds with presets like <strong>Gentle Breeze</strong>, <strong>Windy</strong>, or <strong>Storm</strong>.</p>
+  <p class="performance-disclaimer"><strong style="color: #e4e4e7;">Note:</strong> Realistic mode is extremely performance-intensive, even on high-end hardware.</p>
+</div>
+
+<div class="feature-column">
+  <div class="img-container aspect-standard" style="margin-bottom: 20px;">
+    <img src=".\assets\collage final.jpg" alt="Seasons" loading="lazy">
+  </div>
+
+  <h3>Dynamic Seasons System</h3>
+  <p>Shift the mood of your scene with a single slider. Move from vibrant mid-summer greens to rich autumn colors and snow-covered winter landscapes.</p>
+</div>
+  </div>
+</div>
+
+
+
+    <div class="text-divider reveal"><span>Under The Hood</span></div>
+
+    <div class="scatter-highlight reveal">
+      <h2>Advanced Scatter Engine.</h2>
+      <p style="text-align: center; margin-bottom: 50px; color: #e4e4e7; font-size: 1.25rem;">
+        And by advanced, we mean <em>advanced</em>.
+      </p>
+
+      <div class="bento-grid">
+
+        <div class="bento-card col-span-2 video-card">
+          <img src=".\assets\MATEIRAL COLORIZATION FINAL with text.jpg" alt="Material Control & Colorization" class="bento-img-full" loading="lazy">
+          <div class="bento-content">
+            <h3>Material Control & Colorization</h3>
+            <p>Adjust your scatter materials to add realistic dryness, lawn stripes, and other surface details across your environment biomes—all from a single panel.</p>
+          </div>
+        </div>
+
+        <div class="bento-card row-span-2 video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\integrateddecal-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Integrated Decal System"></video>
+          <div class="bento-content">
+            <h3>Integrated Decal System</h3>
+            <p>Easily project decals such as graffiti, posters, signs, and more onto any surface.</p>
+          </div>
+        </div>
+
+        <div class="bento-card">
+          <img src="./assets/precisiosn controil renders4 proxy 2 final.jpg" alt="Speed Optimization" class="bento-img-full" loading="lazy">
+          <div class="bento-content">
+            <h3>Speed & Optimization</h3>
+            <p>Keep your viewport running smoothly with optimization tools such as camera culling, proxy objects, viewport density overrides, and more.</p>
+          </div>
+        </div>
+
+        <div class="bento-card">
+          <img src="./assets/growth behavio final.jpg" alt="Growth Behavior" class="bento-img-full" loading="lazy">
+          <div class="bento-content">
+            <h3>Growth Behavior</h3>
+            <p>Guide growth organically toward objects or repel it from selected targets.</p>
+          </div>
+        </div>
+
+        <div class="bento-card col-span-2 video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\PRECISIONCONTROLREDO-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Precision Control"></video>
+          <div class="bento-content">
+            <h3>Precision Control</h3>
+            <p>Use advanced controls like curves, vertex paint, elevation masks, angle masks, and more to shape exactly where and how your assets are scattered.</p>
+          </div>
+        </div>
+
+        <div class="bento-card row-span-2 mask-card">
+          <img src=".\assets\procedural mask final.jpg" alt="Procedural Masks" class="bento-img-full" loading="lazy">
+          <div class="bento-content">
+            <h3>Scatter Patterns</h3>
+            <p>Use scatter masks to place your assets in unique patterns, shapes, and formations.</p>
+          </div>
+        </div>
+
+        <div class="bento-card col-span-2 video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\manualscatterredosmallerfile-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Manual Placement Mode"></video>
+          <div class="bento-content">
+            <h3>Manual Placement Mode</h3> <p>Take manual control when you need it. Scatter, position, and scale your assets exactly the way you want them.</p>
+          </div>
+        </div>
+
+        <div class="bento-card col-span-2 video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\physicsscatteringdemo-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Physics-Based Scattering"></video>
+          <div class="bento-content">
+            <h3>Physics-Based Scattering</h3>
+            <p>Use physics to create results standard scattering can’t—such as naturally stacked rubble piles, debris filling containers, or loose clutter that settles naturally on uneven surfaces.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div class="text-divider reveal"><span>Procedural Ivy</span></div>
+
+<div class="section reveal" style="padding-top: 40px;">
+  <h2>Procedural Ivy System</h2>
+
+  <div class="text-card">
+    <p style="margin-bottom: 25px;">
+      <p>Give your scenes a sense of age and overgrowth with natural looking ivy. Choose from a range of included presets and create anything from subtle growth to rich, overgrown detail.</p>
+    </p>
+  </div>
+
+  <div class="img-container aspect-wide" style="width: calc(100% - 40px); margin: 0 20px 40px 20px;">
+    <video
+      src="./assets\IVYRENDERSHOWCASEBEW-ezgif.com-gif-maker.mp4"
+      muted
+      loop
+      autoplay
+      playsinline
+      preload="metadata"
+      aria-label="Procedural Ivy System Demo">
+    </video>
+  </div>
+
+  <div class="grid-2" style="align-items: stretch; margin-top: 20px; margin-bottom: 50px;">
+  <div class="feature-card">
+    <div class="img-container aspect-standard">
+      <video
+        src="./assets\ivydemorenderv2zoomed-ezgif.com-gif-maker.mp4"
+        poster="./assets/ivy-click-draw.jpg"
+        muted
+        loop
+        autoplay
+        playsinline
+        preload="metadata"
+        aria-label="Easy Click-and-Draw Ivy System">
+      </video>
+    </div>
+    <h3>Easy Click-and-Draw System</h3>
+    <p>Simply select an ivy preset and draw where you want your ivy to spread.</p>
+  </div>
+
+  <div class="feature-card">
+    <div class="img-container aspect-standard">
+      <img
+        src=".\assets\FAST VS REALSITIC IVY.jpg"
+        alt="Realistic and Fast Ivy Modes"
+        loading="lazy">
+    </div>
+    <h3>Realistic or Fast Modes</h3>
+    <p>Choose high-detail realism when you need it, or switch to faster performance for lighter scenes.</p>
+  </div>
+</div>
+
+  <h3 style="text-align: center; color: #e4e4e7; margin-bottom: 20px;">Included Ivy Presets</h3>
+  <div class="swipe-hint">Swipe to explore ivy presets →</div>
+
+  <div class="slider-wrapper">
+    <button class="slider-arrow arrow-left" id="ivyLeft">❮</button>
+    <button class="slider-arrow arrow-right" id="ivyRight">❯</button>
+
+    <div class="horizontal-slider" id="ivySlider">
+      <div class="slider-card">
+        <img src="./assets/Akebia_Quinata preset.jpg" alt="Akebia Quinata Red Ivy Preset" loading="lazy">
+        <div class="slider-label">Akebia Quinata Red</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Akebia_Quinata_white presets_.jpg" alt="Akebia Quinata White Ivy Preset" loading="lazy">
+        <div class="slider-label">Akebia Quinata White</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/clematis_girenas_presets_.jpg" alt="Clematis Girenas Ivy Preset" loading="lazy">
+        <div class="slider-label">Clematis Girenas</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Jasmine presets.jpg" alt="Jasmine Ivy Preset" loading="lazy">
+        <div class="slider-label">Jasmine</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/ipomea_leaf preset.jpg" alt="Ipomea Ivy Preset" loading="lazy">
+        <div class="slider-label">Ipomea</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Vitis_vinifera_white_presets.jpg" alt="Vitis Vinifera Ivy Preset" loading="lazy">
+        <div class="slider-label">Vitis Vinifera</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/trachelospermum_jasminoides_presets.jpg" alt="Trachelospermum Jasminoides Ivy Preset" loading="lazy">
+        <div class="slider-label">Trachelospermum Jasminoides</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Syringa_Vulgaris_presets.jpg" alt="Syringa Vulgaris Ivy Preset" loading="lazy">
+        <div class="slider-label">Syringa Vulgaris</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Stauntonia_Hexaphylla_presets.jpg" alt="Stauntonia Hexaphylla Ivy Preset" loading="lazy">
+        <div class="slider-label">Stauntonia Hexaphylla</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Solanum_lycopersicum preset.jpg" alt="Solanum Lycopersicum Ivy Preset" loading="lazy">
+        <div class="slider-label">Solanum Lycopersicum</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Solanum_jasminoides_presets.jpg" alt="Solanum Jasminoides Ivy Preset" loading="lazy">
+        <div class="slider-label">Solanum Jasminoides</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Rubus_Fruticosus_presets.jpg" alt="Rubus Fruticosus Ivy Preset" loading="lazy">
+        <div class="slider-label">Rubus Fruticosus</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Clematis_Urophylla_presets_.jpg" alt="Clematis Urophylla Ivy Preset" loading="lazy">
+        <div class="slider-label">Clematis Urophylla</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Syringa_Vulgaris_presets.jpg" alt="Syringa Vulgaris Ivy Preset" loading="lazy">
+        <div class="slider-label">Syringa Vulgaris</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Muehlenbeckia_Complexa presets.jpg" alt="Muehlenbeckia Complexa Ivy Preset" loading="lazy">
+        <div class="slider-label">Muehlenbeckia Complexa</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Epipremnum_Aureum presets.jpg" alt="Epipremnum Aureum Ivy Preset" loading="lazy">
+        <div class="slider-label">Epipremnum Aureum</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Clematis_Urophylla_presets_.jpg" alt="Clematis Urophylla Ivy Preset" loading="lazy">
+        <div class="slider-label">Clematis Urophylla</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Clematis_Rebecca_presets_.jpg" alt="Clematis Rebecca Ivy Preset" loading="lazy">
+        <div class="slider-label">Clematis Rebecca</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Actinidia_Deliciosa Preset.jpg" alt="Actinidia Deliciosa Ivy Preset" loading="lazy">
+        <div class="slider-label">Actinidia Deliciosa</div>
+      </div>
+
+      <div class="slider-card">
+        <img src="./assets/Pyrostegia_Venustal_ presets.jpg" alt="Pyrostegia Venusta Ivy Preset" loading="lazy">
+        <div class="slider-label">Pyrostegia Venusta</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="text-divider reveal"><span>Atmospheric Systems</span></div>
+
+    <div class="section reveal" style="padding-top: 20px;">
+      <div class="text-card" style="margin-bottom: 40px;">
+        <h2>Dynamic Weather Systems.</h2>
+        <p>Blanket your scene in procedural rain or falling snow, generate accumulating snow layers, and completely transform the look of your environment in just a few clicks.</p>
+      </div>
+
+      <div class="bento-grid">
+
+        <div class="bento-card col-span-2 video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\raintwo00300150-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Procedural Rain System"></video>
+          <div class="bento-content">
+            <h3>Procedural Rain System</h3>
+            <p>Quickly add cinematic rain to your scene. From light drizzle to heavy storms, choose a preset to give your environment a wet, rain-soaked look.</p>
+          </div>
+        </div>
+
+        <div class="bento-card video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets/rainsurfacecollision.mp4" muted loop autoplay playsinline preload="none" aria-label="Surface Collision"></video>
+          <div class="bento-content">
+            <h3>Surface Collision</h3>
+            <p>Rain dynamically collides with scene geometry, responding naturally to the shapes in your environment.</p>
+          </div>
+        </div>
+
+        <div class="bento-card col-span-2">
+          <img src="./assets/ground snow color corrected.jpg" alt="Snow Ground Cover" class="bento-img-full" loading="lazy">
+          <div class="bento-content">
+            <h3>Ground Cover</h3>
+            <p>Add a realistic layer of snow across your environments and scene objects.</p>
+          </div>
+        </div>
+
+        <div class="bento-card video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets/riiples0020-0150.mp4" muted loop autoplay playsinline preload="none" aria-label="Ripple Shader"></video>
+          <div class="bento-content">
+            <h3>Ripple Shader</h3>
+            <p>Add Rain ripples to complement your rain system and make wet environments feel more alive</p>
+          </div>
+        </div>
+
+        <div class="bento-card col-span-2 video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\snowrensder-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Procedural Snow System"></video>
+          <div class="bento-content">
+            <h3>Procedural Snow System</h3>
+            <p>Quickly add cinematic snowfall to your scene. From light snow to full snowstorms, choose a preset to transform your environment with a cold, wintry look.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="text-divider reveal"><span>Advanced Water</span></div>
+
+    <div class="section reveal" style="padding-top: 20px;">
+      <div class="text-card" style="margin-bottom: 40px;">
+        <h2>Advanced Water System.</h2>
+        <p>Many environments need water, and ScatterFlow gives you a full-featured system to create believable lakes, rivers, ponds, and more.</p>
+      </div>
+
+      <div class="bento-grid">
+
+        <div class="bento-card col-span-2 video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\WATEWRREDO-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Flow Maps and Foam"></video>
+          <div class="bento-content">
+            <h3>Realistic Water</h3>
+            <p>Create believable water with a realistic material featuring depth, surface movement, adjustable color controls, foam, and more.</p>
+          </div>
+        </div>
+
+        <div class="bento-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\causticrender-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Realistic Caustics"></video>
+          <div class="bento-content">
+            <h3>Realistic Caustics</h3>
+            <p>Natural light scattering beneath the water’s surface.</p>
+          </div>
+        </div>
+
+        <div class="bento-card">
+        <img src="./assets/shorline scatter final.jpg" alt="Shoreline Scattering" class="bento-img-full" loading="lazy">
+        <div class="bento-content">
+         <h3>Shoreline Scattering</h3>
+         <p>Scatter assets along shorelines or around objects in the water</p>
+       </div>
+      </div>
+
+        <div class="bento-card video-card">
+          <video class="bento-img-full lazy-video" data-src=".\assets\collision ripples.mp4" muted loop autoplay playsinline preload="none" aria-label="Collision Ripples"></video>
+          <div class="bento-content">
+            <h3>Collision Ripples</h3>
+            <p>Objects create realistic ripples across the water’s surface.</p></p>
+          </div>
+        </div>
+
+        <div class="bento-card video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\flaotingobejkcvtsfinal-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Buoyancy and Debris"></video>
+          <div class="bento-content">
+            <h3>Buoyancy & Debris</h3>
+            <p>Scatter floating debris such as lily pads, logs, trash, and more, all with realistic bobbing, drifting, and collision.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <h3 style="text-align: center; color: #e4e4e7; margin-top: 50px; margin-bottom: 25px;">1-Click Water Presets</h3>
+
+      <div class="water-preset-grid">
+        <div class="water-card">
+          <img src=".\assets\Tropical Water.jpg" alt="Tropical" loading="lazy">
+          <div class="water-label">Tropical</div>
+        </div>
+
+        <div class="water-card">
+          <img src=".\assets\Lake Water.jpg" alt="Lake" loading="lazy">
+          <div class="water-label">Lake</div>
+        </div>
+
+        <div class="water-card">
+          <img src=".\assets\River Water.jpg" alt="River" loading="lazy">
+          <div class="water-label">River</div>
+        </div>
+
+        <div class="water-card">
+          <img src=".\assets\Pool Water.jpg" alt="Pool" loading="lazy">
+          <div class="water-label">Pool</div>
+        </div>
+
+        <div class="water-card">
+          <img src=".\assets\Pond Water.jpg" alt="Pond" loading="lazy">
+          <div class="water-label">Pond</div>
+        </div>
+
+        <div class="water-card">
+          <img src=".\assets\Puddles.jpg" alt="Puddles" loading="lazy">
+          <div class="water-label">Puddles</div>
+        </div>
+      </div>
+
+      <p class="disclaimer-note"><strong style="color: #e4e4e7;">Water disclaimer:</strong> Water is for Cycles only.</p>
+    </div>
+
+    <div class="text-divider reveal"><span>Production Assets</span></div>
+
+    <div class="section reveal" style="padding-top: 20px;">
+      <h2>Included Asset Library.</h2>
+
+      <div class="text-card" style="margin-bottom: 40px;">
+        <p>ScatterFlow includes a growing library of high-quality 3D assets, giving you a strong foundation to start building right away. You can explore everything included below.</p>
+      </div>
+
+      <div class="bento-grid two-col" style="margin-bottom: 20px;">
+        <div class="bento-card">
+          <img src=".\assets\pbr materials.jpg" alt="PBR Textures" class="bento-img-full" loading="lazy">
+          <div class="bento-content">
+            <h3>Quality PBR Materials</h3>
+            <p>Every asset includes high-quality, photorealistic PBR materials with accurate color, alpha, roughness, translucency, and normal maps</p>
+          </div>
+        </div>
+
+        <div class="bento-card">
+          <img src=".\assets\asset browser ready.jpg" alt="Wireframe Topology" class="bento-img-full" loading="lazy">
+          <div class="bento-content">
+            <h3>Asset Browser Ready</h3>
+            <p>Full Asset Browser integration with custom previews, so you can quickly find the assets you’re looking for.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-divider reveal"><span>Explore The Vault</span></div>
+
+      <div class="vault-ui-container">
+        <div class="vault-header">
+          <h3>Interactive Asset Vault</h3>
+          <p>Browse a sample of the included categories.</p>
+        </div>
+
+        <div class="library-wrapper">
+          <div class="vault-category-section">
+            <div class="vault-category-heading"><span>Asset Categories</span></div>
+            <div class="category-tabs" id="assetTabs">
+            <div class="cat-card main-vault-tab active" data-target="cat-nature-trees">
+              <img src=".\assets\Wetland_V1.jpg" alt="Nature" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Nature</div>
+            </div>
+
+            <div class="cat-card main-vault-tab" data-target="cat-trash-premade-sets">
+              <img src=".\assets\Garbage Pile_V1.jpg" alt="Trash" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Trash</div>
+            </div>
+
+            <div class="cat-card main-vault-tab" data-target="cat-construction-premade-sets">
+              <img src=".\assets\Construction Debris_V1.jpg" alt="Construction Debris" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Construction Debris</div>
+            </div>
+
+            <div class="cat-card main-vault-tab" data-target="cat-decals">
+              <img src="https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?auto=format&fit=crop&w=300&q=80" alt="Decals" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Decals</div>
+            </div>
+            </div>
+          </div>
+
+          <div class="vault-category-section vault-subcategory-section" id="natureSubcategorySection" data-vault-parent="nature">
+            <div class="vault-category-heading"><span>Nature Subcategories</span></div>
+            <div class="category-tabs" id="natureTabs" aria-label="Nature asset categories">
+            <div class="cat-card nature-tab vault-subcategory-tab active" data-target="cat-nature-trees">
+              <img src="./assets/AcaciaTrees.jpg" alt="Trees" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Trees</div>
+            </div>
+
+            <div class="cat-card nature-tab vault-subcategory-tab" data-target="cat-nature-plants">
+              <img src="./assets/Aloe.jpg" alt="Plants" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Plants</div>
+            </div>
+
+            <div class="cat-card nature-tab vault-subcategory-tab" data-target="cat-nature-grass">
+              <img src="./assets/BarronBrome.jpg" alt="Grass" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Grass</div>
+            </div>
+
+            <div class="cat-card nature-tab vault-subcategory-tab" data-target="cat-nature-rocks">
+              <img src="./assets/Coastal Rocks.jpg" alt="Rocks" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Rocks</div>
+            </div>
+
+            <div class="cat-card nature-tab vault-subcategory-tab" data-target="cat-nature-sticks">
+              <img src="./assets/Bark.jpg" alt="Sticks" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Sticks</div>
+            </div>
+
+            <div class="cat-card nature-tab vault-subcategory-tab" data-target="cat-nature-debris">
+              <img src="./assets/DeciduousDebris_Clusters.jpg" alt="Debris" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Debris</div>
+            </div>
+            </div>
+          </div>
+
+          <div class="vault-category-section vault-subcategory-section" id="trashSubcategorySection" data-vault-parent="trash" hidden>
+            <div class="vault-category-heading"><span>Trash Subcategories</span></div>
+            <div class="category-tabs" aria-label="Trash asset categories">
+            <div class="cat-card vault-subcategory-tab trash-tab" data-target="cat-trash-premade-sets">
+              <img src="./assets/BoxSet_V1.jpg" alt="Premade Sets" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Premade Sets</div>
+            </div>
+
+            <div class="cat-card vault-subcategory-tab trash-tab" data-target="cat-trash-dumpsters-bins">
+              <img src="./assets/Commercial Dumpster_V1.jpg" alt="Dumpsters &amp; Bins" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Dumpsters &amp; Bins</div>
+            </div>
+
+            <div class="cat-card vault-subcategory-tab trash-tab" data-target="cat-trash-loose-trash">
+              <img src="./assets/Broken Glass Bottles.jpg" alt="Loose Trash" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Loose Trash</div>
+            </div>
+
+            <div class="cat-card vault-subcategory-tab trash-tab" data-target="cat-trash-packaging-household">
+              <img src="./assets/Clean Boxes.jpg" alt="Packaging &amp; Household" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Packaging &amp; Household</div>
+            </div>
+            </div>
+          </div>
+
+          <div class="vault-category-section vault-subcategory-section" id="constructionSubcategorySection" data-vault-parent="construction" hidden>
+            <div class="vault-category-heading"><span>Construction Debris Subcategories</span></div>
+            <div class="category-tabs" aria-label="Construction Debris asset categories">
+            <div class="cat-card vault-subcategory-tab construction-tab" data-target="cat-construction-premade-sets">
+              <img src="./assets/BrickSet_V1.jpg" alt="Premade Sets" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Premade Sets</div>
+            </div>
+
+            <div class="cat-card vault-subcategory-tab construction-tab" data-target="cat-construction-masonry-concrete">
+              <img src="./assets/Brick.jpg" alt="Masonry &amp; Concrete" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Masonry &amp; Concrete</div>
+            </div>
+
+            <div class="cat-card vault-subcategory-tab construction-tab" data-target="cat-construction-metal-industrial">
+              <img src="./assets/Metal Barrels.jpg" alt="Metal &amp; Industrial" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Metal &amp; Industrial</div>
+            </div>
+
+            <div class="cat-card vault-subcategory-tab construction-tab" data-target="cat-construction-site-materials">
+              <img src="./assets/Pallets.jpg" alt="Site Materials" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Site Materials</div>
+            </div>
+            </div>
+          </div>
+
+          <div class="asset-display-area">
+            <div class="asset-grid-group active" id="cat-nature-trees">
+              <div class="asset-item-card"><img src="./assets/AcaciaTrees.jpg" alt="AcaciaTrees" loading="lazy"><div class="asset-item-title">AcaciaTrees</div></div>
+              <div class="asset-item-card"><img src="./assets/AcaciaTrees_Dead.jpg" alt="AcaciaTrees_Dead" loading="lazy"><div class="asset-item-title">AcaciaTrees_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/Beech.jpg" alt="Beech" loading="lazy"><div class="asset-item-title">Beech</div></div>
+              <div class="asset-item-card"><img src="./assets/Beech_Dead.jpg" alt="Beech_Dead" loading="lazy"><div class="asset-item-title">Beech_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/CherryBlossom.jpg" alt="CherryBlossom" loading="lazy"><div class="asset-item-title">CherryBlossom</div></div>
+              <div class="asset-item-card"><img src="./assets/CherryBlossom_Dead.jpg" alt="CherryBlossom_Dead" loading="lazy"><div class="asset-item-title">CherryBlossom_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/CoconutTree.jpg" alt="CoconutTree" loading="lazy"><div class="asset-item-title">CoconutTree</div></div>
+              <div class="asset-item-card"><img src="./assets/JoshuaTree.jpg" alt="JoshuaTree" loading="lazy"><div class="asset-item-title">JoshuaTree</div></div>
+              <div class="asset-item-card"><img src="./assets/JungleTrees.jpg" alt="JungleTrees" loading="lazy"><div class="asset-item-title">JungleTrees</div></div>
+              <div class="asset-item-card"><img src="./assets/Locust.jpg" alt="Locust" loading="lazy"><div class="asset-item-title">Locust</div></div>
+              <div class="asset-item-card"><img src="./assets/Locust_Dead.jpg" alt="Locust_Dead" loading="lazy"><div class="asset-item-title">Locust_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/MapleSapling.jpg" alt="MapleSapling" loading="lazy"><div class="asset-item-title">MapleSapling</div></div>
+              <div class="asset-item-card"><img src="./assets/MapleSapling_Dead.jpg" alt="MapleSapling_Dead" loading="lazy"><div class="asset-item-title">MapleSapling_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/OakSapling.jpg" alt="OakSapling" loading="lazy"><div class="asset-item-title">OakSapling</div></div>
+              <div class="asset-item-card"><img src="./assets/OakSapling_Dead.jpg" alt="OakSapling_Dead" loading="lazy"><div class="asset-item-title">OakSapling_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/OakTree.jpg" alt="OakTree" loading="lazy"><div class="asset-item-title">OakTree</div></div>
+              <div class="asset-item-card"><img src="./assets/OakTree_Dead.jpg" alt="OakTree_Dead" loading="lazy"><div class="asset-item-title">OakTree_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/Pine.jpg" alt="Pine" loading="lazy"><div class="asset-item-title">Pine</div></div>
+              <div class="asset-item-card"><img src="./assets/Pine_Dead.jpg" alt="Pine_Dead" loading="lazy"><div class="asset-item-title">Pine_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/Redwood.jpg" alt="Redwood" loading="lazy"><div class="asset-item-title">Redwood</div></div>
+              <div class="asset-item-card"><img src="./assets/ScotsPine.jpg" alt="ScotsPine" loading="lazy"><div class="asset-item-title">ScotsPine</div></div>
+              <div class="asset-item-card"><img src="./assets/ScotsPine_Dead.jpg" alt="ScotsPine_Dead" loading="lazy"><div class="asset-item-title">ScotsPine_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/SmallOakSapling.jpg" alt="SmallOakSapling" loading="lazy"><div class="asset-item-title">SmallOakSapling</div></div>
+              <div class="asset-item-card"><img src="./assets/Spruce.jpg" alt="Spruce" loading="lazy"><div class="asset-item-title">Spruce</div></div>
+              <div class="asset-item-card"><img src="./assets/Spruce_Dead.jpg" alt="Spruce_Dead" loading="lazy"><div class="asset-item-title">Spruce_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/WhiteFir.jpg" alt="WhiteFir" loading="lazy"><div class="asset-item-title">WhiteFir</div></div>
+              <div class="asset-item-card"><img src="./assets/WhiteFir_Dead.jpg" alt="WhiteFir_Dead" loading="lazy"><div class="asset-item-title">WhiteFir_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/Willow.jpg" alt="Willow" loading="lazy"><div class="asset-item-title">Willow</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-nature-plants" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/Aloe.jpg" alt="Aloe" loading="lazy"><div class="asset-item-title">Aloe</div></div>
+              <div class="asset-item-card"><img src="./assets/Bamboo.jpg" alt="Bamboo" loading="lazy"><div class="asset-item-title">Bamboo</div></div>
+              <div class="asset-item-card"><img src="./assets/Bamboo_Dead.jpg" alt="Bamboo_Dead" loading="lazy"><div class="asset-item-title">Bamboo_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/BananaPlant.jpg" alt="BananaPlant" loading="lazy"><div class="asset-item-title">BananaPlant</div></div>
+              <div class="asset-item-card"><img src="./assets/BirdOfParadise.jpg" alt="BirdOfParadise" loading="lazy"><div class="asset-item-title">BirdOfParadise</div></div>
+              <div class="asset-item-card"><img src="./assets/Bush1.jpg" alt="Bush1" loading="lazy"><div class="asset-item-title">Bush1</div></div>
+              <div class="asset-item-card"><img src="./assets/BushesV1_Dead.jpg" alt="BushesV1_Dead" loading="lazy"><div class="asset-item-title">BushesV1_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/BushesV2.jpg" alt="BushesV2" loading="lazy"><div class="asset-item-title">BushesV2</div></div>
+              <div class="asset-item-card"><img src="./assets/BushesV2_Dead.jpg" alt="BushesV2_Dead" loading="lazy"><div class="asset-item-title">BushesV2_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/CatTail.jpg" alt="CatTail" loading="lazy"><div class="asset-item-title">CatTail</div></div>
+              <div class="asset-item-card"><img src="./assets/Clover.jpg" alt="Clover" loading="lazy"><div class="asset-item-title">Clover</div></div>
+              <div class="asset-item-card"><img src="./assets/Columnar Cacti.jpg" alt="Columnar Cacti" loading="lazy"><div class="asset-item-title">Columnar Cacti</div></div>
+              <div class="asset-item-card"><img src="./assets/CowParsley.jpg" alt="CowParsley" loading="lazy"><div class="asset-item-title">CowParsley</div></div>
+              <div class="asset-item-card"><img src=".\assets\CraneBill_Green.jpg" alt="CraneBil_Green" loading="lazy"><div class="asset-item-title">CraneBil_Green</div></div>
+              <div class="asset-item-card"><img src="./assets/Cranesbill_Dead.jpg" alt="Cranesbill_Dead" loading="lazy"><div class="asset-item-title">Cranesbill_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/Dandelion.jpg" alt="Dandelion" loading="lazy"><div class="asset-item-title">Dandelion</div></div>
+              <div class="asset-item-card"><img src="./assets/DewBerry.jpg" alt="DewBerry" loading="lazy"><div class="asset-item-title">DewBerry</div></div>
+              <div class="asset-item-card"><img src="./assets/DogRose.jpg" alt="DogRose" loading="lazy"><div class="asset-item-title">DogRose</div></div>
+              <div class="asset-item-card"><img src="./assets/DuckWeed.jpg" alt="DuckWeed" loading="lazy"><div class="asset-item-title">DuckWeed</div></div>
+              <div class="asset-item-card"><img src="./assets/Elephant Ear.jpg" alt="Elephant Ear" loading="lazy"><div class="asset-item-title">Elephant Ear</div></div>
+              <div class="asset-item-card"><img src="./assets/FeatherMoss.jpg" alt="FeatherMoss" loading="lazy"><div class="asset-item-title">FeatherMoss</div></div>
+              <div class="asset-item-card"><img src="./assets/Ferns.jpg" alt="Ferns" loading="lazy"><div class="asset-item-title">Ferns</div></div>
+              <div class="asset-item-card"><img src="./assets/FieldClover.jpg" alt="FieldClover" loading="lazy"><div class="asset-item-title">FieldClover</div></div>
+              <div class="asset-item-card"><img src="./assets/FinalHaircapMoss.jpg" alt="FinalHaircapMoss" loading="lazy"><div class="asset-item-title">FinalHaircapMoss</div></div>
+              <div class="asset-item-card"><img src="./assets/FlowerBush.jpg" alt="FlowerBush" loading="lazy"><div class="asset-item-title">FlowerBush</div></div>
+              <div class="asset-item-card"><img src="./assets/FlowerBush_Dead.jpg" alt="FlowerBush_Dead" loading="lazy"><div class="asset-item-title">FlowerBush_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/GarlicMustard.jpg" alt="GarlicMustard" loading="lazy"><div class="asset-item-title">GarlicMustard</div></div>
+              <div class="asset-item-card"><img src="./assets/Golden Barrel Cactus.jpg" alt="Golden Barrel Cactus" loading="lazy"><div class="asset-item-title">Golden Barrel Cactus</div></div>
+              <div class="asset-item-card"><img src="./assets/GreatBurdock_Large.jpg" alt="GreatBurdock_Large" loading="lazy"><div class="asset-item-title">GreatBurdock_Large</div></div>
+              <div class="asset-item-card"><img src="./assets/GreatBurdock_Small.jpg" alt="GreatBurdock_Small" loading="lazy"><div class="asset-item-title">GreatBurdock_Small</div></div>
+              <div class="asset-item-card"><img src="./assets/Greater Celandine.jpg" alt="Greater Celandine" loading="lazy"><div class="asset-item-title">Greater Celandine</div></div>
+              <div class="asset-item-card"><img src="./assets/GroundElder.jpg" alt="GroundElder" loading="lazy"><div class="asset-item-title">GroundElder</div></div>
+              <div class="asset-item-card"><img src="./assets/LadyFern.jpg" alt="LadyFern" loading="lazy"><div class="asset-item-title">LadyFern</div></div>
+              <div class="asset-item-card"><img src="./assets/LambsQuarter.jpg" alt="LambsQuarter" loading="lazy"><div class="asset-item-title">LambsQuarter</div></div>
+              <div class="asset-item-card"><img src="./assets/LilyPads.jpg" alt="LilyPads" loading="lazy"><div class="asset-item-title">LilyPads</div></div>
+              <div class="asset-item-card"><img src="./assets/Monstero.jpg" alt="Monstero" loading="lazy"><div class="asset-item-title">Monstero</div></div>
+              <div class="asset-item-card"><img src="./assets/MugWort_Dead.jpg" alt="MugWort_Dead" loading="lazy"><div class="asset-item-title">MugWort_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/MugWort_Green.jpg" alt="MugWort_Green" loading="lazy"><div class="asset-item-title">MugWort_Green</div></div>
+              <div class="asset-item-card"><img src="./assets/PennyCress.jpg" alt="PennyCress" loading="lazy"><div class="asset-item-title">PennyCress</div></div>
+              <div class="asset-item-card"><img src="./assets/PineBush.jpg" alt="PineBush" loading="lazy"><div class="asset-item-title">PineBush</div></div>
+              <div class="asset-item-card"><img src="./assets/PineBush_Dead.jpg" alt="PineBush_Dead" loading="lazy"><div class="asset-item-title">PineBush_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/Prickly Pear Cactus.jpg" alt="Prickly Pear Cactus" loading="lazy"><div class="asset-item-title">Prickly Pear Cactus</div></div>
+              <div class="asset-item-card"><img src="./assets/RedDogwood.jpg" alt="RedDogwood" loading="lazy"><div class="asset-item-title">RedDogwood</div></div>
+              <div class="asset-item-card"><img src="./assets/SaguaroCactus.jpg" alt="SaguaroCactus" loading="lazy"><div class="asset-item-title">SaguaroCactus</div></div>
+              <div class="asset-item-card"><img src="./assets/ShepardsPurse_Dead.jpg" alt="ShepardsPurse_Dead" loading="lazy"><div class="asset-item-title">ShepardsPurse_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/ShepardsPurse_Green.jpg" alt="ShepardsPurse_Green" loading="lazy"><div class="asset-item-title">ShepardsPurse_Green</div></div>
+              <div class="asset-item-card"><img src="./assets/SpatterDock.jpg" alt="SpatterDock" loading="lazy"><div class="asset-item-title">SpatterDock</div></div>
+              <div class="asset-item-card"><img src="./assets/SpeedWell.jpg" alt="SpeedWell" loading="lazy"><div class="asset-item-title">SpeedWell</div></div>
+              <div class="asset-item-card"><img src="./assets/StickyWilly.jpg" alt="StickyWilly" loading="lazy"><div class="asset-item-title">StickyWilly</div></div>
+              <div class="asset-item-card"><img src="./assets/StingingNettle.jpg" alt="StingingNettle" loading="lazy"><div class="asset-item-title">StingingNettle</div></div>
+              <div class="asset-item-card"><img src="./assets/SweetViolet.jpg" alt="SweetViolet" loading="lazy"><div class="asset-item-title">SweetViolet</div></div>
+              <div class="asset-item-card"><img src="./assets/TumbleWeed.jpg" alt="TumbleWeed" loading="lazy"><div class="asset-item-title">TumbleWeed</div></div>
+              <div class="asset-item-card"><img src="./assets/WaterHicanth.jpg" alt="WaterHicanth" loading="lazy"><div class="asset-item-title">WaterHicanth</div></div>
+              <div class="asset-item-card"><img src="./assets/WaterLillys.jpg" alt="WaterLillys" loading="lazy"><div class="asset-item-title">WaterLillys</div></div>
+              <div class="asset-item-card"><img src="./assets/WoodMoss.jpg" alt="WoodMoss" loading="lazy"><div class="asset-item-title">WoodMoss</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-nature-grass" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/BarronBrome.jpg" alt="BarronBrome" loading="lazy"><div class="asset-item-title">BarronBrome</div></div>
+              <div class="asset-item-card"><img src="./assets/BermudaGrass.jpg" alt="BermudaGrass" loading="lazy"><div class="asset-item-title">BermudaGrass</div></div>
+              <div class="asset-item-card"><img src="./assets/CheatGrass.jpg" alt="CheatGrass" loading="lazy"><div class="asset-item-title">CheatGrass</div></div>
+              <div class="asset-item-card"><img src="./assets/CreepingBentgrass.jpg" alt="CreepingBentgrass" loading="lazy"><div class="asset-item-title">CreepingBentgrass</div></div>
+              <div class="asset-item-card"><img src="./assets/CreepingBentgrass_Cut.jpg" alt="CreepingBentgrass_Cut" loading="lazy"><div class="asset-item-title">CreepingBentgrass_Cut</div></div>
+              <div class="asset-item-card"><img src="./assets/GalettaGrass.jpg" alt="GalettaGrass" loading="lazy"><div class="asset-item-title">GalettaGrass</div></div>
+              <div class="asset-item-card"><img src="./assets/GenericGrass.jpg" alt="GenericGrass" loading="lazy"><div class="asset-item-title">GenericGrass</div></div>
+              <div class="asset-item-card"><img src="./assets/MeadowFoxtail.jpg" alt="MeadowFoxtail" loading="lazy"><div class="asset-item-title">MeadowFoxtail</div></div>
+              <div class="asset-item-card"><img src="./assets/OrchardGrass_Large.jpg" alt="OrchardGrass_Large" loading="lazy"><div class="asset-item-title">OrchardGrass_Large</div></div>
+              <div class="asset-item-card"><img src="./assets/OrchardGrass_Small.jpg" alt="OrchardGrass_Small" loading="lazy"><div class="asset-item-title">OrchardGrass_Small</div></div>
+              <div class="asset-item-card"><img src="./assets/RedFescue.jpg" alt="RedFescue" loading="lazy"><div class="asset-item-title">RedFescue</div></div>
+              <div class="asset-item-card"><img src="./assets/Ryegrass_Cut.jpg" alt="Ryegrass_Cut" loading="lazy"><div class="asset-item-title">Ryegrass_Cut</div></div>
+              <div class="asset-item-card"><img src="./assets/Ryegrass_Dead.jpg" alt="Ryegrass_Dead" loading="lazy"><div class="asset-item-title">Ryegrass_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets/Ryegrass_Large.jpg" alt="Ryegrass_Large" loading="lazy"><div class="asset-item-title">Ryegrass_Large</div></div>
+              <div class="asset-item-card"><img src="./assets/Ryegrass_Small.jpg" alt="Ryegrass_Small" loading="lazy"><div class="asset-item-title">Ryegrass_Small</div></div>
+              <div class="asset-item-card"><img src="./assets/SoftRush.jpg" alt="SoftRush" loading="lazy"><div class="asset-item-title">SoftRush</div></div>
+              <div class="asset-item-card"><img src="./assets/YellowOat_Large.jpg" alt="YellowOat_Large" loading="lazy"><div class="asset-item-title">YellowOat_Large</div></div>
+              <div class="asset-item-card"><img src="./assets/YellowOat_Small.jpg" alt="YellowOat_Small" loading="lazy"><div class="asset-item-title">YellowOat_Small</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-nature-rocks" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/Coastal Rocks.jpg" alt="Coastal Rocks" loading="lazy"><div class="asset-item-title">Coastal Rocks</div></div>
+              <div class="asset-item-card"><img src="./assets/Desert Rocks2.jpg" alt="Desert Rocks2" loading="lazy"><div class="asset-item-title">Desert Rocks2</div></div>
+              <div class="asset-item-card"><img src="./assets/Desert Rocks3.jpg" alt="Desert Rocks3" loading="lazy"><div class="asset-item-title">Desert Rocks3</div></div>
+              <div class="asset-item-card"><img src="./assets/Icelandic rocks.jpg" alt="Icelandic rocks" loading="lazy"><div class="asset-item-title">Icelandic rocks</div></div>
+              <div class="asset-item-card"><img src="./assets/Mossy rocks.jpg" alt="Mossy rocks" loading="lazy"><div class="asset-item-title">Mossy rocks</div></div>
+              <div class="asset-item-card"><img src="./assets/Temperate Rocks1.jpg" alt="Temperate Rocks1" loading="lazy"><div class="asset-item-title">Temperate Rocks1</div></div>
+              <div class="asset-item-card"><img src="./assets/Temperate Rocks2.jpg" alt="Temperate Rocks2" loading="lazy"><div class="asset-item-title">Temperate Rocks2</div></div>
+              <div class="asset-item-card"><img src="./assets/Tundra Rocks.jpg" alt="Tundra Rocks" loading="lazy"><div class="asset-item-title">Tundra Rocks</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-nature-sticks" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/Bark.jpg" alt="Bark" loading="lazy"><div class="asset-item-title">Bark</div></div>
+              <div class="asset-item-card"><img src="./assets/Sticks.jpg" alt="Sticks" loading="lazy"><div class="asset-item-title">Sticks</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-nature-debris" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/DeciduousDebris_Clusters.jpg" alt="DeciduousDebris_Clusters" loading="lazy"><div class="asset-item-title">DeciduousDebris_Clusters</div></div>
+              <div class="asset-item-card"><img src="./assets/TropicalDebris_Clusters.jpg" alt="TropicalDebris_Clusters" loading="lazy"><div class="asset-item-title">TropicalDebris_Clusters</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-trash-premade-sets" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/BoxSet_V1.jpg" alt="BoxSet_V1" loading="lazy"><div class="asset-item-title">BoxSet_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/BoxSet_V2.jpg" alt="BoxSet_V2" loading="lazy"><div class="asset-item-title">BoxSet_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/BoxSet_V3.jpg" alt="BoxSet_V3" loading="lazy"><div class="asset-item-title">BoxSet_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/BoxSet_V4.jpg" alt="BoxSet_V4" loading="lazy"><div class="asset-item-title">BoxSet_V4</div></div>
+              <div class="asset-item-card"><img src="./assets/BoxSet_V5.jpg" alt="BoxSet_V5" loading="lazy"><div class="asset-item-title">BoxSet_V5</div></div>
+              <div class="asset-item-card"><img src="./assets/BoxSet_V6.jpg" alt="BoxSet_V6" loading="lazy"><div class="asset-item-title">BoxSet_V6</div></div>
+              <div class="asset-item-card"><img src="./assets/BoxSet_V7.jpg" alt="BoxSet_V7" loading="lazy"><div class="asset-item-title">BoxSet_V7</div></div>
+              <div class="asset-item-card"><img src="./assets/Can Set_V1.jpg" alt="Can Set_V1" loading="lazy"><div class="asset-item-title">Can Set_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Can Set_V2.jpg" alt="Can Set_V2" loading="lazy"><div class="asset-item-title">Can Set_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Paint Can Set_V1.jpg" alt="Paint Can Set_V1" loading="lazy"><div class="asset-item-title">Paint Can Set_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Paint Can Set_V2.jpg" alt="Paint Can Set_V2" loading="lazy"><div class="asset-item-title">Paint Can Set_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Paint Can Set_V3.jpg" alt="Paint Can Set_V3" loading="lazy"><div class="asset-item-title">Paint Can Set_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/Plastic Barrel Set.jpg" alt="Plastic Barrel Set" loading="lazy"><div class="asset-item-title">Plastic Barrel Set</div></div>
+              <div class="asset-item-card"><img src="./assets/Tire Set_V1.jpg" alt="Tire Set_V1" loading="lazy"><div class="asset-item-title">Tire Set_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Tire Set_V2.jpg" alt="Tire Set_V2" loading="lazy"><div class="asset-item-title">Tire Set_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Tire Set_V3.jpg" alt="Tire Set_V3" loading="lazy"><div class="asset-item-title">Tire Set_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/Tire Set_V4.jpg" alt="Tire Set_V4" loading="lazy"><div class="asset-item-title">Tire Set_V4</div></div>
+              <div class="asset-item-card"><img src="./assets/Tire Set_V5.jpg" alt="Tire Set_V5" loading="lazy"><div class="asset-item-title">Tire Set_V5</div></div>
+              <div class="asset-item-card"><img src="./assets/Tire Set_V6.jpg" alt="Tire Set_V6" loading="lazy"><div class="asset-item-title">Tire Set_V6</div></div>
+              <div class="asset-item-card"><img src="./assets/Trash Can Set_V1.jpg" alt="Trash Can Set_V1" loading="lazy"><div class="asset-item-title">Trash Can Set_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Trash Can Set_V2.jpg" alt="Trash Can Set_V2" loading="lazy"><div class="asset-item-title">Trash Can Set_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Trash Can Set_V3.jpg" alt="Trash Can Set_V3" loading="lazy"><div class="asset-item-title">Trash Can Set_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/Trash Set_V1.jpg" alt="Trash Set_V1" loading="lazy"><div class="asset-item-title">Trash Set_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Trash Set_V2.jpg" alt="Trash Set_V2" loading="lazy"><div class="asset-item-title">Trash Set_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Trash Set_V3.jpg" alt="Trash Set_V3" loading="lazy"><div class="asset-item-title">Trash Set_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/Trash Set_V4.jpg" alt="Trash Set_V4" loading="lazy"><div class="asset-item-title">Trash Set_V4</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-trash-dumpsters-bins" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/Commercial Dumpster_V1.jpg" alt="Commercial Dumpster_V1" loading="lazy"><div class="asset-item-title">Commercial Dumpster_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Commercial Dumpster_V2.jpg" alt="Commercial Dumpster_V2" loading="lazy"><div class="asset-item-title">Commercial Dumpster_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Commercial Dumpster_V3.jpg" alt="Commercial Dumpster_V3" loading="lazy"><div class="asset-item-title">Commercial Dumpster_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/Commercial Dumpster_V4.jpg" alt="Commercial Dumpster_V4" loading="lazy"><div class="asset-item-title">Commercial Dumpster_V4</div></div>
+              <div class="asset-item-card"><img src="./assets/Dumpster With Debris_V1.jpg" alt="Dumpster With Debris_V1" loading="lazy"><div class="asset-item-title">Dumpster With Debris_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Dumpster With Debris_V2.jpg" alt="Dumpster With Debris_V2" loading="lazy"><div class="asset-item-title">Dumpster With Debris_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Dumpster With Trash_V1.jpg" alt="Dumpster With Trash_V1" loading="lazy"><div class="asset-item-title">Dumpster With Trash_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Dumpster With Trash_V2.jpg" alt="Dumpster With Trash_V2" loading="lazy"><div class="asset-item-title">Dumpster With Trash_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Dumpster With Trash_V3.jpg" alt="Dumpster With Trash_V3" loading="lazy"><div class="asset-item-title">Dumpster With Trash_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/Dumpster With Trash_V4.jpg" alt="Dumpster With Trash_V4" loading="lazy"><div class="asset-item-title">Dumpster With Trash_V4</div></div>
+              <div class="asset-item-card"><img src="./assets/Dumpster_V1.jpg" alt="Dumpster_V1" loading="lazy"><div class="asset-item-title">Dumpster_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Dumpster_V2.jpg" alt="Dumpster_V2" loading="lazy"><div class="asset-item-title">Dumpster_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Dumpster_V3.jpg" alt="Dumpster_V3" loading="lazy"><div class="asset-item-title">Dumpster_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/Household Trashcans.jpg" alt="Household Trashcans" loading="lazy"><div class="asset-item-title">Household Trashcans</div></div>
+              <div class="asset-item-card"><img src="./assets/Metal Trash Cans.jpg" alt="Metal Trash Cans" loading="lazy"><div class="asset-item-title">Metal Trash Cans</div></div>
+              <div class="asset-item-card"><img src="./assets/Plastic Trash Cans.jpg" alt="Plastic Trash Cans" loading="lazy"><div class="asset-item-title">Plastic Trash Cans</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-trash-loose-trash" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/Broken Glass Bottles.jpg" alt="Broken Glass Bottles" loading="lazy"><div class="asset-item-title">Broken Glass Bottles</div></div>
+              <div class="asset-item-card"><img src="./assets/Cigarettes.jpg" alt="Cigarettes" loading="lazy"><div class="asset-item-title">Cigarettes</div></div>
+              <div class="asset-item-card"><img src="./assets/Drink Cans.jpg" alt="Drink Cans" loading="lazy"><div class="asset-item-title">Drink Cans</div></div>
+              <div class="asset-item-card"><img src="./assets/Food Cans.jpg" alt="Food Cans" loading="lazy"><div class="asset-item-title">Food Cans</div></div>
+              <div class="asset-item-card"><img src="./assets/Food.jpg" alt="Food" loading="lazy"><div class="asset-item-title">Food</div></div>
+              <div class="asset-item-card"><img src="./assets/Glass Bottle Piles.jpg" alt="Glass Bottle Piles" loading="lazy"><div class="asset-item-title">Glass Bottle Piles</div></div>
+              <div class="asset-item-card"><img src="./assets/Individual Glass Pieces.jpg" alt="Individual Glass Pieces" loading="lazy"><div class="asset-item-title">Individual Glass Pieces</div></div>
+              <div class="asset-item-card"><img src="./assets/Misc Trash.jpg" alt="Misc Trash" loading="lazy"><div class="asset-item-title">Misc Trash</div></div>
+              <div class="asset-item-card"><img src="./assets/Paper Bags.jpg" alt="Paper Bags" loading="lazy"><div class="asset-item-title">Paper Bags</div></div>
+              <div class="asset-item-card"><img src="./assets/Paper Trash.jpg" alt="Paper Trash" loading="lazy"><div class="asset-item-title">Paper Trash</div></div>
+              <div class="asset-item-card"><img src="./assets/Trash Cups.jpg" alt="Trash Cups" loading="lazy"><div class="asset-item-title">Trash Cups</div></div>
+              <div class="asset-item-card"><img src="./assets/TrashBags_Clean.jpg" alt="TrashBags_Clean" loading="lazy"><div class="asset-item-title">TrashBags_Clean</div></div>
+              <div class="asset-item-card"><img src="./assets/TrashBags_Dirty.jpg" alt="TrashBags_Dirty" loading="lazy"><div class="asset-item-title">TrashBags_Dirty</div></div>
+              <div class="asset-item-card"><img src="./assets/Shoes.jpg" alt="Shoes" loading="lazy"><div class="asset-item-title">Shoes</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-trash-packaging-household" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/Clean Boxes.jpg" alt="Clean Boxes" loading="lazy"><div class="asset-item-title">Clean Boxes</div></div>
+              <div class="asset-item-card"><img src="./assets/Dirty Boxes.jpg" alt="Dirty Boxes" loading="lazy"><div class="asset-item-title">Dirty Boxes</div></div>
+              <div class="asset-item-card"><img src=".\assets\Eletronic Scrap_Junk.jpg" alt="Electronic Scrap Junk" loading="lazy"><div class="asset-item-title">Electronic Scrap Junk</div></div>
+              <div class="asset-item-card"><img src="./assets/Fuel Cans.jpg" alt="Fuel Cans" loading="lazy"><div class="asset-item-title">Fuel Cans</div></div>
+              <div class="asset-item-card"><img src="./assets/Paint Cans_Large.jpg" alt="Paint Cans_Large" loading="lazy"><div class="asset-item-title">Paint Cans_Large</div></div>
+              <div class="asset-item-card"><img src="./assets/Paint Cans_Small.jpg" alt="Paint Cans_Small" loading="lazy"><div class="asset-item-title">Paint Cans_Small</div></div>
+              <div class="asset-item-card"><img src="./assets/Pizza Boxes.jpg" alt="Pizza Boxes" loading="lazy"><div class="asset-item-title">Pizza Boxes</div></div>
+              <div class="asset-item-card"><img src="./assets/Plastic Barrels.jpg" alt="Plastic Barrels" loading="lazy"><div class="asset-item-title">Plastic Barrels</div></div>
+              <div class="asset-item-card"><img src="./assets/Plastic bottles.jpg" alt="Plastic bottles" loading="lazy"><div class="asset-item-title">Plastic bottles</div></div>
+              <div class="asset-item-card"><img src="./assets/Plastic Crates.jpg" alt="Plastic Crates" loading="lazy"><div class="asset-item-title">Plastic Crates</div></div>
+              <div class="asset-item-card"><img src="./assets/Shoe Boxes.jpg" alt="Shoe Boxes" loading="lazy"><div class="asset-item-title">Shoe Boxes</div></div>
+              <div class="asset-item-card"><img src="./assets/Tires.jpg" alt="Tires" loading="lazy"><div class="asset-item-title">Tires</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-construction-premade-sets" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/BrickSet_V1.jpg" alt="BrickSet_V1" loading="lazy"><div class="asset-item-title">BrickSet_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/BrickSet_V2.jpg" alt="BrickSet_V2" loading="lazy"><div class="asset-item-title">BrickSet_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Concrete Rubble Set_V1.jpg" alt="Concrete Rubble Set_V1" loading="lazy"><div class="asset-item-title">Concrete Rubble Set_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Concrete Rubble Set_V2.jpg" alt="Concrete Rubble Set_V2" loading="lazy"><div class="asset-item-title">Concrete Rubble Set_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Concrete Rubble Set_V3.jpg" alt="Concrete Rubble Set_V3" loading="lazy"><div class="asset-item-title">Concrete Rubble Set_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/Concrete Rubble Set_V4.jpg" alt="Concrete Rubble Set_V4" loading="lazy"><div class="asset-item-title">Concrete Rubble Set_V4</div></div>
+              <div class="asset-item-card"><img src="./assets/Concrete Rubble Set_V5.jpg" alt="Concrete Rubble Set_V5" loading="lazy"><div class="asset-item-title">Concrete Rubble Set_V5</div></div>
+              <div class="asset-item-card"><img src="./assets/Concrete Rubble Set_V6.jpg" alt="Concrete Rubble Set_V6" loading="lazy"><div class="asset-item-title">Concrete Rubble Set_V6</div></div>
+              <div class="asset-item-card"><img src="./assets/Metal Barrel Set.jpg" alt="Metal Barrel Set" loading="lazy"><div class="asset-item-title">Metal Barrel Set</div></div>
+              <div class="asset-item-card"><img src="./assets/Metal Rubble Set_V1.jpg" alt="Metal Rubble Set_V1" loading="lazy"><div class="asset-item-title">Metal Rubble Set_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Metal Rubble Set_V2.jpg" alt="Metal Rubble Set_V2" loading="lazy"><div class="asset-item-title">Metal Rubble Set_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Metal Rubble Set_V3.jpg" alt="Metal Rubble Set_V3" loading="lazy"><div class="asset-item-title">Metal Rubble Set_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/Pallet Set_V1.jpg" alt="Pallet Set_V1" loading="lazy"><div class="asset-item-title">Pallet Set_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Pallet Set_V2.jpg" alt="Pallet Set_V2" loading="lazy"><div class="asset-item-title">Pallet Set_V2</div></div>
+              <div class="asset-item-card"><img src="./assets/Pallet Set_V3.jpg" alt="Pallet Set_V3" loading="lazy"><div class="asset-item-title">Pallet Set_V3</div></div>
+              <div class="asset-item-card"><img src="./assets/Wood Debris Set_V1.jpg" alt="Wood Debris Set_V1" loading="lazy"><div class="asset-item-title">Wood Debris Set_V1</div></div>
+              <div class="asset-item-card"><img src="./assets/Wood Debris Set_V2.jpg" alt="Wood Debris Set_V2" loading="lazy"><div class="asset-item-title">Wood Debris Set_V2</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-construction-masonry-concrete" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/Brick.jpg" alt="Brick" loading="lazy"><div class="asset-item-title">Brick</div></div>
+              <div class="asset-item-card"><img src="./assets/CinderBlocks.jpg" alt="CinderBlocks" loading="lazy"><div class="asset-item-title">CinderBlocks</div></div>
+              <div class="asset-item-card"><img src="./assets/ConcreteDebris.jpg" alt="ConcreteDebris" loading="lazy"><div class="asset-item-title">ConcreteDebris</div></div>
+              <div class="asset-item-card"><img src="./assets/Large Concrete Rubble.jpg" alt="Large Concrete Rubble" loading="lazy"><div class="asset-item-title">Large Concrete Rubble</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-construction-metal-industrial" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/Metal Barrels.jpg" alt="Metal Barrels" loading="lazy"><div class="asset-item-title">Metal Barrels</div></div>
+              <div class="asset-item-card"><img src="./assets/Metal Beams.jpg" alt="Metal Beams" loading="lazy"><div class="asset-item-title">Metal Beams</div></div>
+              <div class="asset-item-card"><img src="./assets/Metal Mesh.jpg" alt="Metal Mesh" loading="lazy"><div class="asset-item-title">Metal Mesh</div></div>
+              <div class="asset-item-card"><img src="./assets/Metal Pipes.jpg" alt="Metal Pipes" loading="lazy"><div class="asset-item-title">Metal Pipes</div></div>
+              <div class="asset-item-card"><img src="./assets/SheetMetal.jpg" alt="SheetMetal" loading="lazy"><div class="asset-item-title">SheetMetal</div></div>
+              <div class="asset-item-card"><img src="./assets/Wire Bundle.jpg" alt="Wire Bundle" loading="lazy"><div class="asset-item-title">Wire Bundle</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-construction-site-materials" style="display: none;">
+              <div class="asset-item-card"><img src="./assets/Pallets.jpg" alt="Pallets" loading="lazy"><div class="asset-item-title">Pallets</div></div>
+              <div class="asset-item-card"><img src="./assets/Rope.jpg" alt="Rope" loading="lazy"><div class="asset-item-title">Rope</div></div>
+              <div class="asset-item-card"><img src="./assets/Tools.jpg" alt="Tools" loading="lazy"><div class="asset-item-title">Tools</div></div>
+              <div class="asset-item-card"><img src="./assets/Wooden Planks.jpg" alt="Wooden Planks" loading="lazy"><div class="asset-item-title">Wooden Planks</div></div>
+            </div>
+            <div class="asset-grid-group" id="cat-decals" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-divider reveal"><span>Collaborators</span></div>
+
+    <div class="section reveal" style="padding-top: 20px; padding-bottom: 60px;">
+      <div class="text-card" style="margin-bottom: 40px;">
+        <h2>Built with Great Collaborators.</h2>
+        <p>ScatterFlow is shaped by talented artists and technical contributors across every part of the ecosystem.</p>
+      </div>
+
+      <div class="collaboration-list">
+        <div class="collaborator-card">
+          <img src="https://ui-avatars.com/api/?name=Contributor+One&background=27272a&color=ffffff&size=128" alt="Contributor One profile image" class="collaborator-avatar" loading="lazy">
+          <div class="collaborator-info">
+            <h3>Ashlee</h3>
+            <p>Ivy and Wind </p>
+          </div>
+          <div class="collaborator-contribution">Ivy &amp; Wind</div>
+        </div>
+
+        <div class="collaborator-card">
+          <img src="https://ui-avatars.com/api/?name=Contributor+Two&background=27272a&color=ffffff&size=128" alt="Contributor Two profile image" class="collaborator-avatar" loading="lazy">
+          <div class="collaborator-info">
+            <h3>Saladi</h3>
+            <p>Foliage, Trash & Derbis</p>
+          </div>
+          <div class="collaborator-contribution">Foliage, Trash & Derbis</div>
+        </div>
+
+        <div class="collaborator-card">
+          <img src="https://ui-avatars.com/api/?name=Contributor+Three&background=27272a&color=ffffff&size=128" alt="Contributor Three profile image" class="collaborator-avatar" loading="lazy">
+          <div class="collaborator-info">
+            <h3>Leandro</h3>
+            <p>3D Asset Artist</p>
+          </div>
+          <div class="collaborator-contribution">Foliage</div>
+        </div>
+
+        <div class="collaborator-card">
+          <img src="https://ui-avatars.com/api/?name=Contributor+Four&background=27272a&color=ffffff&size=128" alt="Contributor Four profile image" class="collaborator-avatar" loading="lazy">
+          <div class="collaborator-info">
+            <h3>PolyHaven</h3>
+            <p>Sticks</p>
+          </div>
+          <div class="collaborator-contribution">Sticks</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section reveal" style="padding-top: 0; padding-bottom: 60px;">
+      <div class="performance-disclaimer">
+        <strong style="color: #e4e4e7;">Performance disclaimer:</strong> Ivy Realistic Mode and Water are performance-heavy features. Results may vary depending on your PC hardware.
+      </div>
+    </div>
+
+    <div class="section cta-final reveal" id="buy">
+      <h2>Focus on Art, Not Placement.</h2>
+      <p style="margin-bottom: 30px;">Enhance your environment creation pipeline today.</p>
+      <a href="#" class="btn">Get ScatterFlow</a>
+    </div>
+
+  </div>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+    function setupSlider(sliderId, btnLeftId, btnRightId) {
+      const slider = document.getElementById(sliderId);
+      const btnLeft = document.getElementById(btnLeftId);
+      const btnRight = document.getElementById(btnRightId);
+      const scrollAmount = 295;
+
+      if (btnRight && btnLeft && slider) {
+        btnRight.addEventListener('click', () => {
+          slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+
+        btnLeft.addEventListener('click', () => {
+          slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+      }
+    }
+
+    setupSlider('biomeSlider', 'biomeLeft', 'biomeRight');
+    setupSlider('ivySlider', 'ivyLeft', 'ivyRight');
+
+    const mainVaultTabs = document.querySelectorAll('.main-vault-tab');
+    const subcategorySections = document.querySelectorAll('.vault-subcategory-section');
+    const subcategoryTabs = document.querySelectorAll('.vault-subcategory-tab');
+    const assetGroups = document.querySelectorAll('.asset-grid-group');
+
+    function showAssetGroup(targetId) {
+      assetGroups.forEach((group) => {
+        const isActive = group.id === targetId;
+        group.classList.toggle('active', isActive);
+        group.style.display = isActive ? 'grid' : 'none';
+      });
+    }
+
+    function getVaultParent(targetId) {
+      if (targetId.startsWith('cat-nature-')) return 'nature';
+      if (targetId.startsWith('cat-trash-')) return 'trash';
+      if (targetId.startsWith('cat-construction-')) return 'construction';
+      return null;
+    }
+
+    function showSubcategorySection(parent) {
+      subcategorySections.forEach((section) => {
+        section.hidden = section.dataset.vaultParent !== parent;
+      });
+    }
+
+    function activateSubcategory(parent, preferredTarget) {
+      const section = Array.from(subcategorySections).find(
+        (item) => item.dataset.vaultParent === parent
+      );
+
+      if (!section) return preferredTarget;
+
+      const tabs = Array.from(section.querySelectorAll('.vault-subcategory-tab'));
+      const activeTab = tabs.find(
+        (tab) => tab.dataset.target === preferredTarget
+      ) || tabs.find((tab) => tab.classList.contains('active')) || tabs[0];
+
+      if (!activeTab) return preferredTarget;
+
+      tabs.forEach((tab) => tab.classList.toggle('active', tab === activeTab));
+      return activeTab.dataset.target;
+    }
+
+    mainVaultTabs.forEach((card) => {
+      card.addEventListener('click', () => {
+        mainVaultTabs.forEach((tab) => tab.classList.remove('active'));
+        card.classList.add('active');
+
+        const mainTarget = card.dataset.target;
+        const parent = getVaultParent(mainTarget);
+        showSubcategorySection(parent);
+        showAssetGroup(parent ? activateSubcategory(parent, mainTarget) : mainTarget);
+      });
+    });
+
+    subcategoryTabs.forEach((card) => {
+      card.addEventListener('click', () => {
+        const section = card.closest('.vault-subcategory-section');
+        const parent = section?.dataset.vaultParent;
+        if (!section || !parent) return;
+
+        section.querySelectorAll('.vault-subcategory-tab').forEach((tab) => {
+          tab.classList.toggle('active', tab === card);
+        });
+        showAssetGroup(card.dataset.target);
+      });
+    });
+
+    function loadLazyVideo(video) {
+      if (!video || video.dataset.loaded === 'true') return;
+
+      const src = video.dataset.src;
+      if (!src) return;
+
+      video.src = src;
+      video.dataset.loaded = 'true';
+      video.load();
+
+      const playPromise = video.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          console.warn('Autoplay was blocked for video:', src);
+        });
+      }
+    }
+
+    const lazyVideos = document.querySelectorAll('video.lazy-video[data-src]');
+
+    if ('IntersectionObserver' in window) {
+      const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+
+          if (entry.isIntersecting) {
+            loadLazyVideo(video);
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      }, {
+        rootMargin: '500px 0px',
+        threshold: 0.01
+      });
+
+      lazyVideos.forEach(video => videoObserver.observe(video));
+    } else {
+      lazyVideos.forEach(loadLazyVideo);
+    }
+  </script>
+</body>
+</html>

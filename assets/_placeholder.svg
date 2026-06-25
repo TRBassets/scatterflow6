@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#222229"/>
+      <stop offset="1" stop-color="#09090b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect x="80" y="80" width="1040" height="640" rx="28" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="3" stroke-dasharray="18 18"/>
+  <circle cx="470" cy="340" r="70" fill="rgba(255,255,255,0.12)"/>
+  <path d="M255 610 L470 420 L610 545 L715 455 L945 610 Z" fill="rgba(255,255,255,0.16)"/>
+  <text x="600" y="665" text-anchor="middle" fill="#e4e4e7" font-family="Arial, sans-serif" font-size="34" font-weight="700">Missing local media</text>
+  <text x="600" y="710" text-anchor="middle" fill="#a1a1aa" font-family="Arial, sans-serif" font-size="26">Drop the file into assets/ or edit js/media-paths.js</text>
+</svg>

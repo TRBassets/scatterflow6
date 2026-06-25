@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScatterFlow for Blender | Fast Ecosystem Creation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CORE STYLES --- */
+        :root {
+            --bg-color: #000000;
+            --bg-accent: #09090b;
+            --text-main: #a1a1aa;
+            --text-heading: #ffffff;
+            --glass: rgba(10, 10, 12, 0.7);
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --transition-main: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .main-canvas {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--bg-accent);
+            position: relative;
+            overflow: hidden;
+            border-left: 1px solid #1f1f22;
+            border-right: 1px solid #1f1f22;
+        }
+
+        /* --- SCROLL ANIMATIONS --- */
+        .reveal { opacity: 0; transform: translateY(30px); transition: var(--transition-main); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* --- TYPOGRAPHY & BUTTONS --- */
+        h1, h2, h3, h4 { font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem; }
+        h1 { font-size: 2.8rem; letter-spacing: -0.04em; line-height: 1.1; text-align: center; }
+        h2 { font-size: 2.0rem; letter-spacing: -0.03em; margin-bottom: 1.5rem; text-align: center; }
+        h3 { font-size: 1.15rem; margin-bottom: 8px; color: #ffffff; z-index: 2; position: relative; }
+        h4 { font-size: 1.05rem; margin-bottom: 5px; color: #e4e4e7; }
+        p { font-size: 1.1rem; line-height: 1.6; font-weight: 300; margin-bottom: 1.5rem; z-index: 2; position: relative; }
+
+        .btn {
+            display: inline-block; background-color: var(--text-heading); color: var(--bg-color);
+            padding: 14px 30px; font-size: 1.05rem; font-weight: 500; text-decoration: none;
+            border-radius: 40px; transition: var(--transition-main);
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(255, 255, 255, 0.25); background-color: #f4f4f5; }
+        
+        .badge {
+            display: inline-block; padding: 4px 10px; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; font-size: 0.8rem; 
+            color: #fff; margin-right: 5px; margin-bottom: 10px; font-weight: 500; position: relative; z-index: 2;
+        }
+        .badge.soon { background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; align-self: flex-start; }
+
+        /* --- LAYOUT UTILITIES --- */
+        .section { position: relative; padding: 60px 0; width: 100%; display: block; clear: both; }
+        .hero { padding: 80px 20px 40px 20px; height: auto; display: flex; flex-direction: column; align-items: center; background: radial-gradient(circle at center top, rgba(255,255,255,0.03) 0%, transparent 60%); }
+        
+        .text-card { padding: 0 40px; text-align: center; max-width: 700px; margin: 0 auto; }
+
+        /* --- TEXT DIVIDERS (NEW) --- */
+        .text-divider {
+            display: flex; align-items: center; justify-content: center; margin: 60px 20px 40px 20px; opacity: 0.5;
+        }
+        .text-divider::before, .text-divider::after {
+            content: ''; flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+        }
+        .text-divider span { padding: 0 15px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #a1a1aa; font-weight: 600; }
+
+        /* --- VIDEO CONTAINER --- */
+        .video-container {
+            width: 100%;
+            max-width: 760px;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-glow);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 10;
+            background: #000;
+        }
+
+        .hero-title-gradient {
+            background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.6) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* --- IMAGE CONTAINERS --- */
+        .img-container {
+            border-radius: 12px; overflow: hidden; border: 1px solid var(--border-glow);
+            transition: var(--transition-main); background-color: #18181b;
+            display: flex; align-items: center; justify-content: center; position: relative; z-index: 2;
+        }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; display: block; transition: var(--transition-main); }
+        .img-container:hover img { transform: scale(1.03); }
+        .aspect-wide { aspect-ratio: 16 / 7; height: auto; }
+        .aspect-standard { aspect-ratio: 4 / 3; height: auto; }
+
+        /* --- SPECIFIC SECTIONS --- */
+        .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; padding: 0 30px; margin-bottom: 40px;}
+        .split-text { text-align: left; }
+
+        /* REUSABLE HORIZONTAL SLIDER */
+        .slider-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
+        .horizontal-slider {
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px;
+            padding: 0 20px 20px 20px; scrollbar-width: none; scroll-behavior: smooth; width: 100%;
+        }
+        .horizontal-slider::-webkit-scrollbar { display: none; }
+        
+        .slider-card {
+            flex: 0 0 280px; scroll-snap-align: start; position: relative; border-radius: 12px;
+            overflow: hidden; border: 1px solid var(--border-glow); background-color: #18181b; aspect-ratio: 4/3; height: auto;
+        }
+        .slider-card img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition-main); }
+        .slider-card:hover img { transform: scale(1.08); filter: brightness(1.1); }
+        .slider-label {
+            position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+            padding: 6px 14px; border-radius: 20px; color: #fff; font-size: 0.9rem; font-weight: 500; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .swipe-hint { text-align: right; padding-right: 20px; font-size: 0.9rem; color: #52525b; margin-top: -10px; margin-bottom: 20px; }
+
+        .slider-arrow {
+            position: absolute; top: 40%; transform: translateY(-50%); background: rgba(10, 10, 12, 0.8);
+            border: 1px solid var(--border-glow); color: white; width: 44px; height: 44px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20;
+            font-size: 1.2rem; backdrop-filter: blur(4px); transition: var(--transition-main); box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .slider-arrow:hover { background: rgba(255,255,255,0.1); transform: translateY(-50%) scale(1.05); }
+        .arrow-left { left: 10px; }
+        .arrow-right { right: 10px; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 20px; margin-bottom: 25px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; padding: 0 20px; margin-bottom: 20px; }
+        
+        .scatter-highlight { background: radial-gradient(circle at center top, rgba(30, 30, 35, 0.4) 0%, var(--bg-accent) 100%); border-top: 1px solid var(--border-glow); border-bottom: 1px solid var(--border-glow); padding: 80px 0; margin: 0; width: 100%; display: block; }
+        
+        .feature-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glow); border-radius: 12px; padding: 20px; transition: var(--transition-main); height: 100%; text-align: left; display: flex; flex-direction: column; }
+        .feature-card:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-5px); }
+        .feature-card p { font-size: 0.95rem; line-height: 1.5; color: #a1a1aa; margin: 0; flex-grow: 1; }
+        .feature-card .aspect-standard { width: 100%; margin: 0 0 20px 0; border-radius: 8px; flex-shrink: 0; }
+
+        /* --- TESTIMONIALS STYLES --- */
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glow);
+            border-radius: 12px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between;
+            transition: var(--transition-main);
+        }
+        .testimonial-card:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-3px); }
+        .stars { color: #fbbf24; font-size: 1.2rem; margin-bottom: 15px; letter-spacing: 2px;}
+        .testimonial-text { font-size: 0.95rem; font-style: italic; color: #d4d4d8; margin-bottom: 20px; flex-grow: 1; line-height: 1.6;}
+        .testimonial-author { display: flex; align-items: center; gap: 12px; }
+        .testimonial-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #3f3f46; }
+        .author-info h4 { margin: 0; font-size: 0.95rem; color: #fff; }
+        .author-info span { font-size: 0.8rem; color: #a1a1aa; }
+
+        /* --- BENTO GRID STYLES --- */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: minmax(260px, auto);
+            gap: 15px;
+            padding: 0 20px;
+        }
+        .bento-grid.two-col { grid-template-columns: repeat(2, 1fr); }
+        
+        .bento-card {
+            background: #111; border: 1px solid var(--border-glow);
+            border-radius: 16px; padding: 25px; transition: var(--transition-main);
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
+            justify-content: flex-end;
+        }
+        .bento-card:hover { border-color: rgba(255, 255, 255, 0.3); }
+        
+        .bento-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%);
+            z-index: 1; transition: var(--transition-main); pointer-events: none;
+        }
+        .bento-card:hover::before { background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.05) 100%); }
+        
+        .bento-content { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+        .bento-content p { font-size: 0.95rem; margin-bottom: 0; color: #d4d4d8; }
+        .bento-content h3 { text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
+        .bento-img-full {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: 0; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .bento-card:hover .bento-img-full { transform: scale(1.05); }
+
+        .col-span-2 { grid-column: span 2; }
+        .row-span-2 { grid-row: span 2; }
+
+        /* --- PRESET PILLS FOR WATER SYSTEM --- */
+        .preset-pill-container {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 25px; padding: 0 20px;
+        }
+        .preset-pill {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px; padding: 10px 24px; color: #e4e4e7; font-size: 0.95rem;
+            font-weight: 500; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px);
+            transition: var(--transition-main); cursor: default;
+        }
+        .preset-pill:hover {
+            background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); color: #fff; transform: translateY(-2px);
+        }
+
+        /* --- TALL WATER PRESET GRID --- */
+        .water-preset-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            padding: 0 20px;
+            margin-bottom: 40px;
+        }
+        .water-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-glow);
+            aspect-ratio: 9 / 16;
+            cursor: pointer;
+            transition: var(--transition-main);
+        }
+        .water-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
+            z-index: 1; transition: var(--transition-main); pointer-events: none;
+        }
+        .water-card:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .water-card:hover::before { background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(255,255,255,0.05) 100%); }
+        
+        .water-card img { width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; z-index: 0; transition: transform 0.4s ease; }
+        .water-card:hover img { transform: scale(1.1); }
+        
+        .water-label { 
+            position: absolute; bottom: 15px; left: 0; width: 100%; text-align: center; 
+            color: #fff; font-size: 0.85rem; font-weight: 600; z-index: 2; 
+            text-transform: uppercase; letter-spacing: 1px; pointer-events: none; 
+        }
+
+        .feature-column { display: flex; flex-direction: column; }
+        .feature-column h3 { text-align: center; margin-bottom: 12px; }
+        .feature-column p { text-align: center; font-size: 1rem; color: #a1a1aa; }
+
+        /* --- VAULT UI CONTAINER FOR GALLERY DISTINCTION --- */
+        .vault-ui-container {
+            background: #050508;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 0 20px;
+            box-shadow: inset 0 20px 50px rgba(0,0,0,0.6), 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .vault-header { text-align: center; margin-bottom: 25px; }
+        .vault-header h3 { font-size: 1.4rem; color: #fff; margin-bottom: 5px; }
+        .vault-header p { font-size: 0.95rem; color: #a1a1aa; margin: 0; }
+
+        /* --- CARD-BASED ASSET LIBRARY (TABBED GALLERY) --- */
+        .library-wrapper { margin: 0; }
+        
+        .category-tabs { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 20px; scrollbar-width: thin; scrollbar-color: #3f3f46 transparent; margin-bottom: 20px; }
+        .category-tabs::-webkit-scrollbar { height: 6px; }
+        .category-tabs::-webkit-scrollbar-thumb { background-color: #3f3f46; border-radius: 10px; }
+        
+        .cat-card { flex: 0 0 140px; height: 100px; border-radius: 10px; position: relative; overflow: hidden; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: var(--transition-main); background: #111; }
+        .cat-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; transform: scale(1); }
+        .cat-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.65); transition: background 0.3s ease; z-index: 1; }
+        .cat-card:hover .cat-overlay { background: rgba(0,0,0,0.3); }
+        
+        .cat-card.active { border-color: #ffffff; box-shadow: 0 0 15px rgba(255,255,255,0.15); }
+        .cat-card.active .cat-overlay { background: rgba(0,0,0,0.1); }
+        .cat-card.active img { transform: scale(1.08); }
+        
+        .cat-title { position: absolute; bottom: 10px; left: 10px; right: 10px; color: #fff; font-size: 0.85rem; font-weight: 600; text-align: center; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.9); z-index: 2; pointer-events: none; }
+
+        .asset-display-area { 
+            background: transparent; border: none; padding: 0; min-height: 350px; 
+            display: grid; grid-template-columns: 1fr; grid-template-rows: 1fr; position: relative;
+        }
+        
+        .asset-grid-group { 
+            grid-column: 1; grid-row: 1; 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; 
+            opacity: 0; visibility: hidden; pointer-events: none; transform: scale(0.98);
+            transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+        }
+        .asset-grid-group.active { 
+            opacity: 1; visibility: visible; pointer-events: auto; transform: scale(1); z-index: 2;
+        }
+
+        .asset-item-card { border-radius: 8px; overflow: hidden; border: 1px solid var(--border-glow); position: relative; background: #000; aspect-ratio: 1/1; cursor: pointer; }
+        .asset-item-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: all 0.3s ease; }
+        .asset-item-card:hover img { opacity: 1; transform: scale(1.05); }
+        .asset-item-title { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 25px 10px 10px 10px; color: white; font-size: 0.85rem; text-align: center; font-weight: 500; pointer-events: none; z-index: 2;}
+
+        .cta-final { background-color: var(--bg-color); text-align: center; padding: 80px 20px; border-top: 1px solid var(--border-glow); clear: both; }
+
+        @media (max-width: 768px) {
+            .bento-grid, .bento-grid.two-col { grid-template-columns: 1fr 1fr; }
+            .col-span-2 { grid-column: span 2; }
+            .row-span-2 { grid-row: span 1; }
+            .water-preset-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .water-card { aspect-ratio: 3 / 4; }
+        }
+
+        @media (max-width: 650px) {
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.8rem; }
+            .split-grid, .grid-2, .grid-3, .bento-grid, .bento-grid.two-col { grid-template-columns: 1fr; }
+            .col-span-2, .row-span-2 { grid-column: span 1; grid-row: span 1; }
+            .split-text { text-align: center; margin-bottom: 20px; }
+            .text-card { padding: 0 20px; }
+            .feature-column { margin-bottom: 30px; }
+            .slider-card { flex: 0 0 240px; }
+            .cat-card { flex: 0 0 120px; height: 85px; }
+            .vault-ui-container { padding: 15px; margin: 0 10px; }
+            .asset-grid-group { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .text-divider span { font-size: 0.7rem; padding: 0 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-canvas">
+
+        <div class="section hero">
+            <div class="video-container reveal active">
+                <iframe src="https://www.youtube.com/embed/vHxwFq9uMvY?autoplay=1&mute=1&loop=1&playlist=vHxwFq9uMvY" title="ScatterFlow Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="text-card reveal active">
+                <h1 class="hero-title-gradient">ScatterFlow</h1>
+                <p>A complete toolset for procedural ecosystems, advanced scattering, and premade biomes in Blender.</p>
+                <a href="#buy" class="btn" style="margin-top: 10px;">Get ScatterFlow</a>
+            </div>
+        </div>
+
+        <div class="text-divider reveal"><span>The ScatterFlow Pipeline</span></div>
+
+        <div class="section reveal" style="padding-top: 20px;">
+            <div class="text-card" style="max-width: 750px;">
+                <h2 style="font-size: 2.4rem; letter-spacing: -0.05em; margin-bottom: 30px;">Not just another scatter tool.</h2>
+                <p style="font-size: 1.25rem; color: #e4e4e7; line-height: 1.7; margin-bottom: 25px;">
+                    Most environment addons give you a brush and a library of static assets, leaving you to do the heavy lifting. We built ScatterFlow to be different.
+                </p>
+                <p style="font-size: 1.15rem; line-height: 1.7;">
+                    It’s an interconnected pipeline. Instead of just spraying instances across a mesh, ScatterFlow allows you to drop entire, physics-aware biomes that react to seasonal changes, sway in procedural wind, and weather naturally under dynamic rain and snow. It is the fastest way to achieve production-level realism in Blender.
+                </p>
+            </div>
+        </div>
+
+        <div class="text-divider reveal"><span>Community Reviews</span></div>
+
+        <div class="section reveal" style="padding-top: 20px;">
+            <div class="grid-3">
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">"ScatterFlow has completely eliminated the tedious part of environment design. The preset biomes look incredible straight out of the box."</p>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80" alt="Creator Avatar" class="testimonial-avatar">
+                        <div class="author-info">
+                            <h4>CG Horizon</h4>
+                            <span>300k+ YouTube Subs</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">"The physics-based scattering alone is worth it. Being able to just drop debris and watch it settle naturally is a total game changer."</p>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Creator Avatar" class="testimonial-avatar">
+                        <div class="author-info">
+                            <h4>The 3D Forge</h4>
+                            <span>Blender Educator</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">"Hands down the fastest way to get photorealistic nature in Blender right now. The dynamic seasons blow my mind every time."</p>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Creator Avatar" class="testimonial-avatar">
+                        <div class="author-info">
+                            <h4>PolyMastery</h4>
+                            <span>Environment Artist</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-divider reveal"><span>Core Features</span></div>
+
+        <div class="section reveal" style="padding-top: 20px;">
+            <div class="split-grid">
+                <div class="split-text">
+                    <h2 style="text-align: left;">Instant, Production-Quality Ecosystems.</h2>
+                    <p>Time is your most valuable asset. ScatterFlow biomes are designed to eliminate the hours spent manually placing grass, rocks, and trees, delivering a fully realized environment instantly.</p>
+                    <p style="margin-bottom: 0;">Achieve massive scale and uncompromising photorealism in seconds. With a single click, you drop in a complete, visually stunning ecosystem—freeing you to focus entirely on composition, lighting, and art direction.</p>
+                </div>
+                <div class="img-container aspect-standard">
+                    <img src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=600&q=80" alt="Instant Ecosystem Creation">
+                </div>
+            </div>
+            
+            <div class="grid-3" style="align-items: stretch; margin-top: 20px;">
+                <div class="feature-card">
+                    <div class="img-container aspect-standard">
+                        <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=400&q=80" alt="Premade Ecosystems">
+                    </div>
+                    <h3>Fully Pre-Configured</h3>
+                    <p>Every biome is a complete ecosystem out of the box, with accurate asset layering and density rules already established.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="img-container aspect-standard">
+                        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80" alt="Instant Speed">
+                    </div>
+                    <h3>Instant Population</h3>
+                    <p>Skip the setup phase. Blanket massive terrains with millions of optimized instances in seconds, not hours.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="img-container aspect-standard">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80" alt="Ease of Use">
+                    </div>
+                    <h3>One-Click Workflow</h3>
+                    <p>No complex node trees or manual painting required. Select your biome, click your target mesh, and get straight to art directing.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-divider reveal"><span>Ecosystem Presets</span></div>
+
+        <div class="section reveal" style="padding-top: 20px;">
+            <h2>20 Premade Presets</h2>
+            <div class="text-card">
+                <p style="margin-bottom: 30px;">From dense tropical canopies to arid wastelands, instantly populate your scenes using our library of ready-to-use ecosystems.</p>
+            </div>
+            
+            <div class="swipe-hint">Swipe to explore all 20 biomes →</div>
+            
+            <div class="slider-wrapper">
+                <button class="slider-arrow arrow-left" id="biomeLeft">❮</button>
+                <button class="slider-arrow arrow-right" id="biomeRight">❯</button>
+                
+                <div class="horizontal-slider" id="biomeSlider">
+                    <div class="slider-card">
+                        <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=400&q=80" alt="Forest">
+                        <div class="slider-label">Dense Forest</div>
+                    </div>
+                    <div class="slider-card">
+                        <img src="https://images.unsplash.com/photo-1518182170546-076616fdacfb?auto=format&fit=crop&w=400&q=80" alt="Tropical">
+                        <div class="slider-label">Tropical Jungle</div>
+                    </div>
+                    <div class="slider-card">
+                        <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=400&q=80" alt="Aquatic">
+                        <div class="slider-label">Aquatic Reef</div>
+                    </div>
+                    <div class="slider-card">
+                        <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80" alt="Wasteland">
+                        <div class="slider-label">Arid Wasteland</div>
+                    </div>
+                    <div class="slider-card">
+                        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=400&q=80" alt="Meadow">
+                        <div class="slider-label">Spring Meadow</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-divider reveal"><span>Under The Hood</span></div>
+
+        <div class="scatter-highlight reveal">
+            <h2>Advanced Scatter Engine.</h2>
+            <p style="text-align: center; margin-bottom: 50px; color: #e4e4e7; font-size: 1.25rem;">And by advanced, we mean <em>advanced</em>.</p>
+            
+            <div class="bento-grid">
+                
+                <div class="bento-card col-span-2">
+                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80" alt="Colorization" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Material Control & Colorization</h3>
+                        <p>Fine-tune everything from a single panel. Adjust your scatter materials seamlessly, and inject realistic dryness and growth colors across your biomes for organic blending.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card row-span-2">
+                    <img src="https://images.unsplash.com/photo-1518002171953-a080ee817e1f?auto=format&fit=crop&w=400&q=80" alt="Physics Based Dropping" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Physics-Based Scattering</h3>
+                        <p>Drop assets naturally using rigid body physics to create realistic piles of rubble, or accumulated leaves.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=400&q=80" alt="Speed Optimization" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Speed & Optimization</h3>
+                        <p>Keep viewports smooth with auto frustum culling.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1563209259-ea2ffbf34fb4?auto=format&fit=crop&w=400&q=80" alt="Procedural Masks" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Procedural Masks</h3>
+                        <p>Drive organic distribution with powerful noise textures.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1524806082260-261bd1173264?auto=format&fit=crop&w=400&q=80" alt="Precision Control" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Precision Control</h3>
+                        <p>Use vertex groups, paths, and elevation masks.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1505356822725-08ad25f3ffe4?auto=format&fit=crop&w=400&q=80" alt="Growth Behavior" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Growth Behavior</h3>
+                        <p>Organically grow towards light sources or repel targets.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1506869640319-ce1a18f9bfc0?auto=format&fit=crop&w=400&q=80" alt="Grid Arrays" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Grid Arrays</h3>
+                        <p>Array objects to generate complex walls or rock structures.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card col-span-2">
+                    <img src="https://images.unsplash.com/photo-1515405295579-ba7b45403062?auto=format&fit=crop&w=600&q=80" alt="Decals" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Integrated Decal System</h3>
+                        <p>Project photorealistic decals like graffiti, posters, and surface damage directly onto geometry without touching UV maps.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1543872084-c7bd3822856f?auto=format&fit=crop&w=400&q=80" alt="Altitude Slope" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Altitude & Slope</h3>
+                        <p>Confine ecosystems based on height or angles.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="text-divider reveal"><span>Atmospheric Systems</span></div>
+
+        <div class="section reveal" style="padding-top: 20px;">
+            <div class="text-card" style="margin-bottom: 40px;">
+                <h2>Dynamic Weather Systems.</h2>
+                <p>Instantly introduce atmospheric depth. Blanket your scene in procedural rain, layer accumulating snow, and completely change the narrative of your environment with responsive weather masking.</p>
+            </div>
+
+            <div class="bento-grid">
+                <div class="bento-card col-span-2">
+                    <img src="https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=600&q=80" alt="Procedural Rain" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Procedural Rain System</h3>
+                        <p>Transform your scene into a wet environment instantly. Toggle between Drizzle, Steady Shower, and Storm presets with a single click.</p>
+                    </div>
+                </div>
+                
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=400&q=80" alt="Rain Collision" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Surface Collision</h3>
+                        <p>Rain collides with scene geometry dynamically.</p>
+                    </div>
+                </div>
+                
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1555448248-2571daf6344b?auto=format&fit=crop&w=400&q=80" alt="Ripple Shader" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Ripple Shader</h3>
+                        <p>Built-in responsive water ripples and puddles.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card col-span-2">
+                    <img src="https://images.unsplash.com/photo-1478265409131-1f65c88f965c?auto=format&fit=crop&w=600&q=80" alt="Accumulating Snow" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Accumulating Snow</h3>
+                        <p>Winterize your environments seamlessly. Choose from Light Snow or intense Snowstorm presets to dramatically alter the mood of your scene.</p>
+                    </div>
+                </div>
+                
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1483921020237-2ff51e8e4b22?auto=format&fit=crop&w=400&q=80" alt="Snow Ground Cover" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Ground Cover</h3>
+                        <p>Automatically maps realistic snow to mesh normals.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-divider reveal"><span>Fluid Dynamics</span></div>
+
+        <div class="section reveal" style="padding-top: 20px;">
+            <div class="text-card" style="margin-bottom: 40px;">
+                <h2>Advanced Water System.</h2>
+                <p>Bring your shorelines and rivers to life. ScatterFlow includes a fully integrated, physics-driven water system that interacts with your ecosystem dynamically.</p>
+            </div>
+
+            <div class="bento-grid">
+                <div class="bento-card col-span-2">
+                    <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=600&q=80" alt="Flow Maps and Foam" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Flow Maps & Foam</h3>
+                        <p>Generate realistic river flows and ocean currents. Foam dynamically gathers around scattered rocks, shores, and intersecting geometry.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?auto=format&fit=crop&w=400&q=80" alt="Realistic Caustics" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Realistic Caustics</h3>
+                        <p>Physically accurate light scattering beneath the surface.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80" alt="Shoreline Scattering" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Shoreline Scattering</h3>
+                        <p>Automatically distribute debris, shells, and wet sand along the water's edge.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=400&q=80" alt="Collision Ripples" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Collision Ripples</h3>
+                        <p>Water realistically reacts to characters and rigid body objects.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1533518336332-9ab2e4b47e50?auto=format&fit=crop&w=400&q=80" alt="Floating Debris" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Buoyancy & Debris</h3>
+                        <p>Scatter floating debris, lilypads, and logs that bob naturally with the waves.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="text-align: center; color: #e4e4e7; margin-top: 50px; margin-bottom: 25px;">1-Click Water Presets</h3>
+            
+            <div class="water-preset-grid">
+                <div class="water-card">
+                    <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=300&q=80" alt="Tropical">
+                    <div class="water-label">Tropical</div>
+                </div>
+                <div class="water-card">
+                    <img src="https://images.unsplash.com/photo-1437482078695-73f5ca6c96e2?auto=format&fit=crop&w=300&q=80" alt="Lake">
+                    <div class="water-label">Lake</div>
+                </div>
+                <div class="water-card">
+                    <img src="https://images.unsplash.com/photo-1432405972618-c6a4f534125f?auto=format&fit=crop&w=300&q=80" alt="River">
+                    <div class="water-label">River</div>
+                </div>
+                <div class="water-card">
+                    <img src="https://images.unsplash.com/photo-1572331165267-854da2b10ccc?auto=format&fit=crop&w=300&q=80" alt="Pool">
+                    <div class="water-label">Pool</div>
+                </div>
+                <div class="water-card">
+                    <img src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?auto=format&fit=crop&w=300&q=80" alt="Clear">
+                    <div class="water-label">Clear</div>
+                </div>
+                <div class="water-card">
+                    <img src="https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=300&q=80" alt="Puddles">
+                    <div class="water-label">Puddles</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-divider reveal"><span>Production Assets</span></div>
+
+        <div class="section reveal" style="padding-top: 20px;">
+            <h2>Included Asset Library.</h2>
+            <div class="text-card" style="margin-bottom: 40px;">
+                <p>ScatterFlow ships with a massive, production-ready library of highly optimized 3D assets to ensure you have everything you need to start building immediately.</p>
+            </div>
+
+            <div class="bento-grid two-col" style="margin-bottom: 20px;">
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1616423640778-28d1b53229bd?auto=format&fit=crop&w=600&q=80" alt="PBR Textures" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>4K PBR Materials</h3>
+                        <p>Every asset features meticulously crafted, micro-detailed textures with accurate roughness, translucency, and normal maps for absolute photorealism.</p>
+                    </div>
+                </div>
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80" alt="Wireframe Topology" class="bento-img-full">
+                    <div class="bento-content">
+                        <h3>Viewport Optimized</h3>
+                        <p>High visual fidelity doesn't have to melt your GPU. Our assets are built with exceptionally clean topology and efficient LODs to keep large scenes running smoothly.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-divider reveal"><span>Explore The Vault</span></div>
+
+            <div class="vault-ui-container">
+                <div class="vault-header">
+                    <h3>Interactive Asset Vault</h3>
+                    <p>Browse a sample of the included categories.</p>
+                </div>
+                
+                <div class="library-wrapper">
+                    <div class="category-tabs" id="assetTabs">
+                        <div class="cat-card active" data-target="cat-foliage">
+                            <img src="https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=300&q=80" alt="Foliage">
+                            <div class="cat-overlay"></div>
+                            <div class="cat-title">Foliage & Nature</div>
+                        </div>
+                        <div class="cat-card" data-target="cat-trash">
+                            <img src="https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=300&q=80" alt="Trash">
+                            <div class="cat-overlay"></div>
+                            <div class="cat-title">Trash & Decay</div>
+                        </div>
+                        <div class="cat-card" data-target="cat-debris">
+                            <img src="https://images.unsplash.com/photo-1526435987119-72b17f8a32bb?auto=format&fit=crop&w=300&q=80" alt="Debris">
+                            <div class="cat-overlay"></div>
+                            <div class="cat-title">Debris & Ruins</div>
+                        </div>
+                        <div class="cat-card" data-target="cat-landscape">
+                            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=300&q=80" alt="Terrain">
+                            <div class="cat-overlay"></div>
+                            <div class="cat-title">Landscapes</div>
+                        </div>
+                        <div class="cat-card" data-target="cat-water">
+                            <img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=300&q=80" alt="Water">
+                            <div class="cat-overlay"></div>
+                            <div class="cat-title">Water Systems</div>
+                        </div>
+                        <div class="cat-card" data-target="cat-decals">
+                            <img src="https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?auto=format&fit=crop&w=300&q=80" alt="Decals">
+                            <div class="cat-overlay"></div>
+                            <div class="cat-title">Surface Decals</div>
+                        </div>
+                    </div>
+
+                    <div class="asset-display-area">
+                        <div class="asset-grid-group active" id="cat-foliage">
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=300&q=80" alt="Trees"><div class="asset-item-title">High-Res Trees</div></div>
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1533460004989-cef01064af7e?auto=format&fit=crop&w=300&q=80" alt="Grass"><div class="asset-item-title">Grass & Weeds</div></div>
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1463003416389-296a1ad37ca0?auto=format&fit=crop&w=300&q=80" alt="Plants"><div class="asset-item-title">Great Burdock</div></div>
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1588636504221-cdaff9fdbca5?auto=format&fit=crop&w=300&q=80" alt="Nettles"><div class="asset-item-title">Stinging Nettle</div></div>
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1516021262846-5ecb8bc13cb2?auto=format&fit=crop&w=300&q=80" alt="Moss"><div class="asset-item-title">Mossy Rocks</div></div>
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1600889241951-b0db09da4181?auto=format&fit=crop&w=300&q=80" alt="Sticks"><div class="asset-item-title">Sticks & Clutter</div></div>
+                        </div>
+
+                        <div class="asset-grid-group" id="cat-trash">
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1528324650630-6db72a1deab3?auto=format&fit=crop&w=300&q=80" alt="Street Trash"><div class="asset-item-title">Street Trash</div></div>
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=300&q=80" alt="Abandoned Items"><div class="asset-item-title">Abandoned Items</div></div>
+                        </div>
+
+                        <div class="asset-grid-group" id="cat-debris">
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1581417478175-a9ef18abecbc?auto=format&fit=crop&w=300&q=80" alt="Rubble"><div class="asset-item-title">Concrete Rubble</div></div>
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1518002171953-a080ee817e1f?auto=format&fit=crop&w=300&q=80" alt="Ruins"><div class="asset-item-title">Broken Architecture</div></div>
+                        </div>
+
+                        <div class="asset-grid-group" id="cat-landscape">
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1543872084-c7bd3822856f?auto=format&fit=crop&w=300&q=80" alt="Mountains"><div class="asset-item-title">Background Mountains</div></div>
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1529984920401-26780c85b51b?auto=format&fit=crop&w=300&q=80" alt="Terrain"><div class="asset-item-title">Terrain Meshes</div></div>
+                        </div>
+
+                        <div class="asset-grid-group" id="cat-water">
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1437482078695-73f5ca6c96e2?auto=format&fit=crop&w=300&q=80" alt="Ocean"><div class="asset-item-title">Ocean Surfaces</div></div>
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=300&q=80" alt="Puddles"><div class="asset-item-title">Puddles & Murk</div></div>
+                        </div>
+
+                        <div class="asset-grid-group" id="cat-decals">
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?auto=format&fit=crop&w=300&q=80" alt="Graffiti"><div class="asset-item-title">Street Graffiti</div></div>
+                            <div class="asset-item-card"><img src="https://images.unsplash.com/photo-1506161183350-0a2a4651df09?auto=format&fit=crop&w=300&q=80" alt="Stains"><div class="asset-item-title">Dirt & Grime</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-divider reveal"><span>Development Roadmap</span></div>
+
+        <div class="section reveal" style="padding-top: 20px; padding-bottom: 60px;">
+            <div class="text-card" style="margin-bottom: 40px;">
+                <h2>Coming Soon in V2.0</h2>
+                <p>We are constantly expanding ScatterFlow. Here is a sneak peek at what is dropping in the next major update, free for all existing users.</p>
+            </div>
+
+            <div class="bento-grid two-col">
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1558227691-41ea78d1f631?auto=format&fit=crop&w=600&q=80" alt="Cables and Pipes" class="bento-img-full">
+                    <div class="bento-content">
+                        <div class="badge soon">In Development</div>
+                        <h3>Procedural Cables & Pipes</h3>
+                        <p>Instantly generate complex cable networks, hanging wires, and industrial piping that dynamically wrap around and sag between your scene geometry.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card">
+                    <img src="https://images.unsplash.com/photo-1582967788606-a171c1080cb0?auto=format&fit=crop&w=600&q=80" alt="Underwater Biome" class="bento-img-full">
+                    <div class="bento-content">
+                        <div class="badge soon">Next Update</div>
+                        <h3>Underwater Biomes</h3>
+                        <p>Dive deep with our upcoming aquatic ecosystem update. Featuring massive coral reefs, drifting kelp forests, and physics-based floating particulates.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section cta-final reveal" id="buy">
+            <h2>Focus on Art, Not Placement.</h2>
+            <p style="margin-bottom: 30px;">Enhance your environment creation pipeline today.</p>
+            <a href="#" class="btn">Get ScatterFlow</a>
+        </div>
+
+    </div>
+
+    <script>
+        // 1. Scroll Reveal Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.12 });
+
+        document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+        // 2. Slider Logic
+        function setupSlider(sliderId, btnLeftId, btnRightId) {
+            const slider = document.getElementById(sliderId);
+            const btnLeft = document.getElementById(btnLeftId);
+            const btnRight = document.getElementById(btnRightId);
+            const scrollAmount = 295; 
+
+            if(btnRight && btnLeft && slider) {
+                btnRight.addEventListener('click', () => {
+                    slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                });
+                btnLeft.addEventListener('click', () => {
+                    slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                });
+            }
+        }
+        
+        setupSlider('biomeSlider', 'biomeLeft', 'biomeRight');
+        setupSlider('ivySlider', 'ivyLeft', 'ivyRight');
+
+        // 3. Tabbed Asset Library Logic
+        const tabCards = document.querySelectorAll('.cat-card');
+        const assetGroups = document.querySelectorAll('.asset-grid-group');
+
+        tabCards.forEach(card => {
+            card.addEventListener('click', () => {
+                tabCards.forEach(t => t.classList.remove('active'));
+                card.classList.add('active');
+
+                assetGroups.forEach(group => group.classList.remove('active'));
+                
+                const targetId = card.getAttribute('data-target');
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
