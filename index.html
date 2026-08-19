@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ScatterFlow for Blender | Fast Ecosystem Creation</title>
+  <title>ScatterFlow Pro for Blender | Fast Ecosystem Creation</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -143,6 +143,51 @@
       align-self: flex-start;
     }
 
+
+    .badge.beta {
+      background: rgba(168, 85, 247, 0.18);
+      border-color: rgba(192, 132, 252, 0.45);
+      color: #d8b4fe;
+      margin: 0;
+    }
+
+    .feature-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .feature-title-row h3 {
+      margin: 0;
+    }
+
+    .coming-soon-card {
+      cursor: default;
+    }
+
+    .coming-soon-card::before,
+    .coming-soon-card:hover::before {
+      opacity: 1;
+      background: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.72) 62%, rgba(0,0,0,0.50) 100%);
+    }
+
+    .coming-soon-card .bento-img-full,
+    .coming-soon-card:hover .bento-img-full {
+      filter: brightness(0.30) saturate(0.65);
+      transform: scale(1.02);
+    }
+
+    .coming-soon-card:hover .bento-content {
+      transform: none;
+      opacity: 1;
+    }
+
+    .coming-soon-card .badge.soon {
+      margin-bottom: 10px;
+    }
+
     .section {
       position: relative;
       padding: 60px 0;
@@ -158,6 +203,241 @@
       flex-direction: column;
       align-items: center;
       background: radial-gradient(circle at center top, rgba(255,255,255,0.03) 0%, transparent 60%);
+    }
+
+    .hero-copy {
+      margin-bottom: 52px;
+    }
+
+    .hero-copy h1 {
+      margin-bottom: 0;
+    }
+
+    .hero .video-container {
+      margin-bottom: 18px;
+    }
+
+    .hero-caption {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 20px;
+      text-align: center;
+      color: #71717a;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+
+    .suite-divider {
+      margin-top: 44px;
+      margin-bottom: 30px;
+    }
+
+    .pipeline-intro {
+      padding: 24px 20px 14px;
+    }
+
+    .pipeline-intro .text-card {
+      max-width: 720px;
+    }
+
+    .pipeline-intro h2 {
+      font-size: 2.35rem;
+      letter-spacing: -0.05em;
+      margin-bottom: 24px;
+    }
+
+    .animated-suite-headline {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1;
+      padding: 0.08em 0 0.18em;
+      isolation: isolate;
+    }
+
+    .addon-anchor {
+      display: inline-block;
+      margin-bottom: 0.24em;
+      white-space: nowrap;
+      font-size: 0.96em;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      color: #f4f4f5;
+    }
+
+    .feature-cycle-stage {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      min-height: 1.42em;
+      padding: 0.06em 0 0.22em;
+      overflow: visible;
+      isolation: isolate;
+    }
+
+    .feature-cycle-stage::before,
+    .feature-cycle-stage::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      pointer-events: none;
+      opacity: 0;
+      z-index: -1;
+      transition: opacity 520ms ease, transform 680ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .feature-cycle-stage::before {
+      top: 50%;
+      width: min(560px, 92%);
+      height: 108px;
+      transform: translate(-50%, -50%) scale(0.76);
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 34%, rgba(255,255,255,0.025) 52%, transparent 74%);
+      filter: blur(14px);
+    }
+
+    .feature-cycle-stage::after {
+      bottom: -0.02em;
+      width: min(420px, 76%);
+      height: 2px;
+      transform: translateX(-50%) scaleX(0.16);
+      transform-origin: center;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.94), transparent);
+      box-shadow: 0 0 18px rgba(255,255,255,0.16);
+    }
+
+    .feature-cycle-stage.final-hit::before {
+      opacity: 0.54;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .feature-cycle-stage.final-hit::after {
+      opacity: 0.92;
+      transform: translateX(-50%) scaleX(1);
+    }
+
+    .feature-cycle-word {
+      grid-area: 1 / 1;
+      display: block;
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+      font-size: 0.94em;
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      color: #a1a1aa;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition: opacity 120ms ease, transform 160ms ease, color 320ms ease, text-shadow 320ms ease, letter-spacing 320ms ease;
+      will-change: transform, opacity;
+      position: relative;
+      z-index: 1;
+    }
+
+    .feature-cycle-word.is-hidden {
+      opacity: 0;
+      transform: translateY(-7px) scale(0.99);
+    }
+
+    .feature-cycle-word.is-final {
+      color: #ffffff;
+      font-weight: 800;
+      letter-spacing: -0.055em;
+      text-shadow: 0 0 32px rgba(255,255,255,0.16);
+      background: linear-gradient(180deg, #ffffff 0%, #ffffff 34%, #d8d8de 78%, #b4b4bc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: opacity 560ms ease, transform 760ms cubic-bezier(0.16, 1, 0.3, 1), color 420ms ease, text-shadow 560ms ease, letter-spacing 420ms ease;
+    }
+
+    .feature-cycle-word.is-final.is-hidden {
+      opacity: 0;
+      transform: translateY(18px) scale(0.94);
+    }
+
+    .feature-cycle-stage.final-hit .feature-cycle-word.is-final {
+      transform: translateY(0) scale(1.075);
+      text-shadow: 0 0 38px rgba(255,255,255,0.18);
+    }
+
+    .pipeline-intro .intro-lead {
+      max-width: 650px;
+      margin: 0 auto 16px;
+      color: #e4e4e7;
+      font-size: 1.18rem;
+      line-height: 1.75;
+    }
+
+    .pipeline-intro .intro-supporting {
+      max-width: 650px;
+      margin: 0 auto;
+      color: #a1a1aa;
+      font-size: 1.04rem;
+      line-height: 1.75;
+    }
+
+    .feature-explore-cue {
+      display: flex;
+      width: fit-content;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin: 42px auto 0;
+      padding: 10px 22px 4px;
+      color: #8b8b93;
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: var(--transition-main);
+    }
+
+    .feature-explore-cue:hover {
+      color: #d4d4d8;
+      transform: translateY(2px);
+    }
+
+    .feature-explore-cue .explore-arrow {
+      position: relative;
+      width: 26px;
+      height: 38px;
+      opacity: 0.72;
+    }
+
+    .feature-explore-cue .explore-arrow::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 1px;
+      height: 27px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.65));
+      transform: translateX(-50%);
+    }
+
+    .feature-explore-cue .explore-arrow::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 2px;
+      width: 9px;
+      height: 9px;
+      border-right: 1px solid rgba(255,255,255,0.75);
+      border-bottom: 1px solid rgba(255,255,255,0.75);
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .pipeline-intro.active .feature-explore-cue .explore-arrow {
+      animation: exploreArrowFloat 1.8s ease-in-out 0.9s infinite;
+    }
+
+    @keyframes exploreArrowFloat {
+      0%, 100% { transform: translateY(0); opacity: 0.55; }
+      50% { transform: translateY(6px); opacity: 1; }
     }
 
     .text-card {
@@ -216,6 +496,14 @@
       background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.6) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    .pro-tier {
+      display: inline-block;
+      font-style: italic;
+      padding-right: 0.12em;
+      margin-right: -0.03em;
+      overflow: visible;
     }
 
     .img-container {
@@ -440,64 +728,6 @@
       flex-shrink: 0;
     }
 
-    .testimonial-card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-glow);
-      border-radius: 12px;
-      padding: 25px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: var(--transition-main);
-    }
-
-    .testimonial-card:hover {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-3px);
-    }
-
-    .stars {
-      color: #fbbf24;
-      font-size: 1.2rem;
-      margin-bottom: 15px;
-      letter-spacing: 2px;
-    }
-
-    .testimonial-text {
-      font-size: 0.95rem;
-      font-style: italic;
-      color: #d4d4d8;
-      margin-bottom: 20px;
-      flex-grow: 1;
-      line-height: 1.6;
-    }
-
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .testimonial-avatar {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #3f3f46;
-    }
-
-    .author-info h4 {
-      margin: 0;
-      font-size: 0.95rem;
-      color: #fff;
-    }
-
-    .author-info span {
-      font-size: 0.8rem;
-      color: #a1a1aa;
-    }
-
     .bento-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -508,6 +738,10 @@
 
     .bento-grid.two-col {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .scatter-engine-grid {
+      grid-auto-flow: dense;
     }
 
     .bento-card {
@@ -632,7 +866,7 @@
 
     .water-preset-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 10px;
       padding: 0 20px;
       margin-bottom: 18px;
@@ -1050,6 +1284,173 @@
       filter: brightness(1.08);
     }
 
+
+    /* Coming-soon cards stay locked and darkened on hover. */
+    .bento-card.coming-soon-card::before,
+    .bento-card.coming-soon-card:hover::before {
+      opacity: 1;
+      background: linear-gradient(to top, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.72) 62%, rgba(0,0,0,0.50) 100%);
+    }
+
+    .bento-card.coming-soon-card .bento-img-full,
+    .bento-card.coming-soon-card:hover .bento-img-full {
+      filter: brightness(0.30) saturate(0.65);
+      transform: scale(1.02);
+    }
+
+    .bento-card.coming-soon-card:hover .bento-content {
+      transform: none;
+      opacity: 1;
+    }
+
+    .feature-column .feature-title-row h3 {
+      margin: 0;
+    }
+
+
+
+    .sale-banner {
+      padding: 20px 20px 0 20px;
+    }
+
+    .sale-banner-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 22px 24px;
+      text-align: center;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 45%, rgba(255,255,255,0.07) 100%);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(10px);
+    }
+
+    .sale-banner-inner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top center, rgba(255,255,255,0.12) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    .sale-banner-kicker {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #f4f4f5;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+      animation: saleTextRise 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .sale-banner-headline {
+      position: relative;
+      z-index: 1;
+      font-size: 1.9rem;
+      line-height: 1.15;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 10px;
+      background: linear-gradient(100deg, #ffffff 0%, #ffffff 38%, #c4c4ca 48%, #ffffff 58%, #ffffff 100%);
+      background-size: 260% 100%;
+      background-position: 150% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: saleTextRise 720ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both, saleTextShimmer 4.2s linear 1.1s infinite;
+    }
+
+    .sale-banner-subline {
+      position: relative;
+      z-index: 1;
+      margin: 0 auto 16px;
+      max-width: 620px;
+      color: #d4d4d8;
+      font-size: 1rem;
+      line-height: 1.6;
+      animation: saleTextRise 720ms cubic-bezier(0.16, 1, 0.3, 1) 170ms both;
+    }
+
+    .sale-banner-offers {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .sale-banner-offer-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #ffffff;
+      font-size: 0.86rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      animation: saleTextRise 720ms cubic-bezier(0.16, 1, 0.3, 1) 260ms both;
+    }
+
+    .sale-banner-offer-pill:nth-child(2) {
+      animation-delay: 340ms;
+    }
+
+    .sale-banner-offer-pill.upgrade-offer {
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .sale-offer-code {
+      color: #c4c4ca;
+      font-size: 0.74rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
+    .sale-offer-code strong {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    @keyframes saleTextRise {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+        filter: blur(3px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes saleTextShimmer {
+      0%, 22% {
+        background-position: 150% 0;
+      }
+      52% {
+        background-position: -150% 0;
+      }
+      52.01%, 100% {
+        background-position: 150% 0;
+      }
+    }
+
     @media (max-width: 768px) {
       .bento-grid,
       .bento-grid.two-col {
@@ -1080,6 +1481,30 @@
     }
 
     @media (max-width: 650px) {
+
+      .sale-banner {
+        padding: 16px 10px 0 10px;
+      }
+
+      .sale-banner-inner {
+        padding: 18px 16px;
+        border-radius: 16px;
+      }
+
+      .sale-banner-headline {
+        font-size: 1.55rem;
+      }
+
+      .sale-banner-subline {
+        font-size: 0.95rem;
+        margin-bottom: 14px;
+      }
+
+      .sale-banner-offer-pill {
+        width: 100%;
+        font-size: 0.8rem;
+      }
+
       h1 {
         font-size: 2.2rem;
       }
@@ -1113,6 +1538,52 @@
 
       .text-card {
         padding: 0 20px;
+      }
+
+      .hero-copy {
+        margin-bottom: 38px;
+      }
+
+      .hero-caption {
+        font-size: 0.86rem;
+      }
+
+      .suite-divider {
+        margin-top: 36px;
+        margin-bottom: 24px;
+      }
+
+      .pipeline-intro {
+        padding-top: 20px;
+      }
+
+      .pipeline-intro h2 {
+        font-size: 2rem;
+      }
+
+      .pipeline-intro .intro-lead {
+        font-size: 1.08rem;
+      }
+
+      .animated-suite-headline {
+        line-height: 1.08;
+      }
+
+      .addon-anchor {
+        font-size: 0.9em;
+      }
+
+      .feature-cycle-word {
+        font-size: 0.78em;
+      }
+
+
+      .feature-explore-cue {
+        margin-top: 34px;
+        padding-left: 12px;
+        padding-right: 12px;
+        font-size: 0.66rem;
+        letter-spacing: 0.1em;
       }
 
       .feature-column {
@@ -1162,15 +1633,61 @@
         font-size: 0.72rem;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .addon-anchor,
+      .feature-cycle-word {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        animation: none !important;
+      }
+
+      .feature-cycle-stage.final-hit::before,
+      .feature-cycle-stage.final-hit::after {
+        transition: none !important;
+        opacity: 0;
+      }
+
+      .feature-explore-cue .explore-arrow {
+        animation: none !important;
+      }
+
+      .sale-banner-kicker,
+      .sale-banner-headline,
+      .sale-banner-subline,
+      .sale-banner-offer-pill {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+        filter: none;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div class="main-canvas">
 
+
+    <div class="sale-banner reveal active">
+      <div class="sale-banner-inner">
+        <span class="sale-banner-kicker">Limited Launch Offer</span>
+        <div class="sale-banner-headline">25% Off During the Launch Period</div>
+        <p class="sale-banner-subline">Existing ScatterFlow customers receive 50% off their upgrade.</p>
+        <div class="sale-banner-offers">
+          <span class="sale-banner-offer-pill">25% OFF LAUNCH PERIOD</span>
+          <span class="sale-banner-offer-pill upgrade-offer">
+            <span>EXISTING CUSTOMERS: 50% OFF UPGRADE</span>
+            <span class="sale-offer-code">Use Code: <strong>[CODE]</strong></span>
+          </span>
+        </div>
+      </div>
+    </div>
+
     <div class="section hero">
-      <div class="text-card reveal active">
-        <h1 class="hero-title-gradient">ScatterFlow</h1>
+      <div class="text-card hero-copy reveal active">
+        <h1 class="hero-title-gradient">ScatterFlow <em class="pro-tier">Pro</em></h1>
       </div>
 
       <div class="video-container reveal active">
@@ -1182,68 +1699,36 @@
           allowfullscreen>
         </iframe>
       </div>
+
+      <p class="hero-caption reveal active">
+      </p>
     </div>
 
-    <div class="text-divider reveal"><span>Used by Blenders Top envirmonment artists</span></div>
+    <div class="text-divider suite-divider reveal"><span>The ScatterFlow Suite</span></div>
 
-    <div class="section reveal" style="padding-top: 20px;">
-      <div class="grid-3">
-        <div class="testimonial-card">
-          <div class="stars">★★★★★</div>
-          <p class="testimonial-text">"Coming Soon."</p>
-          <div class="testimonial-author">
-            <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80" alt="Creator Avatar" class="testimonial-avatar" loading="lazy">
-            <div class="author-info">
-              <h4>CG Horizon</h4>
-              <span>300k+ YouTube Subs</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="testimonial-card">
-          <div class="stars">★★★★★</div>
-          <p class="testimonial-text">"Coming Soon."</p>
-          <div class="testimonial-author">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Creator Avatar" class="testimonial-avatar" loading="lazy">
-            <div class="author-info">
-              <h4>The 3D Forge</h4>
-              <span>Blender Educator</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="testimonial-card">
-          <div class="stars">★★★★★</div>
-          <p class="testimonial-text">"Coming Soon."</p>
-          <div class="testimonial-author">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Creator Avatar" class="testimonial-avatar" loading="lazy">
-            <div class="author-info">
-              <h4>PolyMastery</h4>
-              <span>Environment Artist</span>
-            </div>
-          </div>
-        </div>
+    <div class="section pipeline-intro reveal">
+      <div class="text-card">
+        <h2 class="animated-suite-headline" aria-label="1 Addon. Endless Environments.">
+          <span class="addon-anchor" aria-hidden="true">1 Addon.</span>
+          <span class="feature-cycle-stage" aria-hidden="true">
+            <span class="feature-cycle-word" id="featureCycleWord">Endless Environments.</span>
+          </span>
+        </h2>
+        <p class="intro-lead">
+          ScatterFlow brings the entire environment creation process into one place — so the tool you start with is the tool you finish with.
+        </p>
+        <p class="intro-supporting">
+          No more relying on a different addon for every stage of your workflow. From building complete biomes to refining the smallest details.
+        </p>
       </div>
+
+      <a class="feature-explore-cue" href="#biomes">
+        <span>Explore all ScatterFlow features below</span>
+        <span class="explore-arrow" aria-hidden="true"></span>
+      </a>
     </div>
 
-    <div class="text-divider reveal"><span>The ScatterFlow Pipeline</span></div>
-
-    <div class="section reveal" style="padding-top: 20px;">
-      <div class="text-card" style="max-width: 750px;">
-        <h2 style="font-size: 2.4rem; letter-spacing: -0.05em; margin-bottom: 30px;">One Addon. Endless Environments.</h2>
-
-<p style="font-size: 1.25rem; color: #e4e4e7; line-height: 1.7; margin-bottom: 25px;">
-  ScatterFlow was built to remove the hassle of relying on multiple addons from different companies just to create great environments.
-</p>
-
-<p style="font-size: 1.15rem; line-height: 1.7;">
-  It brings the essential tools for building, scattering, and refining environments into one streamlined Blender workflow—saving you time, money, and frustration.
-</p>
-
-      </div>
-    </div>
-
-    <div class="text-divider reveal"><span>Biomes System</span></div>
+    <div class="text-divider reveal" id="biomes"><span>Biomes System</span></div>
 
     <div class="section reveal" style="padding-top: 20px;">
       <div class="split-grid">
@@ -1549,7 +2034,10 @@
         </video>
       </div>
 
-  <h3>Procedural Wind</h3>
+  <div class="feature-title-row">
+    <h3>Procedural Wind</h3>
+    <span class="badge beta">Beta</span>
+  </div>
   <p>True realism needs motion. Choose from three directional wind modes: <strong>Performance</strong> for speed, <strong>Hybrid</strong> for balance, or <strong>Realistic</strong> for the most lifelike movement.</p>
   <p>Fine-tune the movement in seconds with presets like <strong>Gentle Breeze</strong>, <strong>Windy</strong>, or <strong>Storm</strong>.</p>
   <p class="performance-disclaimer"><strong style="color: #e4e4e7;">Note:</strong> Realistic mode is extremely performance-intensive, even on high-end hardware.</p>
@@ -1573,21 +2061,21 @@
     <div class="scatter-highlight reveal">
       <h2>Advanced Scatter Engine.</h2>
       <p style="text-align: center; margin-bottom: 50px; color: #e4e4e7; font-size: 1.25rem;">
-        And by advanced, we mean <em>advanced</em>.
+        ScatterFlow’s scatter engine is one of the most advanced scattering systems ever built for Blender. And unlike other scatter add-ons, ScatterFlow goes beyond simply scattering objects across a surface. Explore all of its advanced features below.
       </p>
 
-      <div class="bento-grid">
+      <div class="bento-grid scatter-engine-grid">
 
         <div class="bento-card col-span-2 video-card">
-          <img src=".\assets\MATEIRAL COLORIZATION FINAL with text.jpg" alt="Material Control & Colorization" class="bento-img-full" loading="lazy">
+          <video class="bento-img-full lazy-video" data-src="./assets\PRECISIONCONTROLREDO-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Precision Control"></video>
           <div class="bento-content">
-            <h3>Material Control & Colorization</h3>
-            <p>Adjust your scatter materials to add realistic dryness, lawn stripes, and other surface details across your environment biomes—all from a single panel.</p>
+            <h3>Precision Control</h3>
+            <p>Use advanced controls like curves, vertex paint, elevation masks, angle masks, and more to shape exactly where and how your assets are scattered.</p>
           </div>
         </div>
 
         <div class="bento-card row-span-2 video-card">
-          <video class="bento-img-full lazy-video" data-src="./assets\integrateddecal-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Integrated Decal System"></video>
+          <video class="bento-img-full lazy-video" data-src="./assets\New decal competesesd.mp4" muted loop autoplay playsinline preload="none" aria-label="Integrated Decal System"></video>
           <div class="bento-content">
             <h3>Integrated Decal System</h3>
             <p>Easily project decals such as graffiti, posters, signs, and more onto any surface.</p>
@@ -1611,10 +2099,10 @@
         </div>
 
         <div class="bento-card col-span-2 video-card">
-          <video class="bento-img-full lazy-video" data-src="./assets\PRECISIONCONTROLREDO-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Precision Control"></video>
+          <img src=".\assets\MATEIRAL COLORIZATION FINAL with text.jpg" alt="Material Control & Colorization" class="bento-img-full" loading="lazy">
           <div class="bento-content">
-            <h3>Precision Control</h3>
-            <p>Use advanced controls like curves, vertex paint, elevation masks, angle masks, and more to shape exactly where and how your assets are scattered.</p>
+            <h3>Material Control & Colorization</h3>
+            <p>Adjust your scatter materials to add realistic dryness, lawn stripes, and other surface details across your environment biomes—all from a single panel.</p>
           </div>
         </div>
 
@@ -1623,6 +2111,14 @@
           <div class="bento-content">
             <h3>Scatter Patterns</h3>
             <p>Use scatter masks to place your assets in unique patterns, shapes, and formations.</p>
+          </div>
+        </div>
+
+        <div class="bento-card row-span-2 video-card mask-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\atmos effects.mp4" muted loop autoplay playsinline preload="none" aria-label="Atmospheric Effects"></video>
+          <div class="bento-content">
+            <h3>Atmospheric Effects</h3>
+            <p>Add atmospheric motion to your scenes with falling leaves, drifting embers, dust, moths, and bug swarms.</p>
           </div>
         </div>
 
@@ -1638,6 +2134,23 @@
           <div class="bento-content">
             <h3>Physics-Based Scattering</h3>
             <p>Use physics to create results standard scattering can’t—such as naturally stacked rubble piles, debris filling containers, or loose clutter that settles naturally on uneven surfaces.</p>
+          </div>
+        </div>
+
+        <div class="bento-card col-span-2 video-card">
+          <video class="bento-img-full lazy-video" data-src="./assets\tranisition effectrs.mp4" muted loop autoplay playsinline preload="none" aria-label="Animated Transitions"></video>
+          <div class="bento-content">
+            <h3>Animated Transitions</h3>
+            <p>Create motion-graphics and cinematic-style effects for your scatters, making them ideal for scene breakdowns.</p>
+          </div>
+        </div>
+
+        <div class="bento-card coming-soon-card">
+          <img src="./assets/Metal Pipes.jpg" alt="Cables, Pipes, and Vents preview" class="bento-img-full" loading="lazy">
+          <div class="bento-content">
+            <span class="badge soon">Coming Soon</span>
+            <h3>Cables, Pipes, and Vents</h3>
+            <p>Customers who purchase during the launch period will receive early preview access to upcoming tools and features.</p>
           </div>
         </div>
 
@@ -1860,6 +2373,15 @@
           </div>
         </div>
 
+        <div class="bento-card coming-soon-card">
+          <img src="./assets/Wetland_V1.jpg" alt="Procedural fog preview" class="bento-img-full" loading="lazy">
+          <div class="bento-content">
+            <span class="badge soon">Coming Soon</span>
+            <h3>Procedural Fog System</h3>
+            <p>Customers who purchase during the launch period will receive early preview access to upcoming tools and features.</p>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1908,7 +2430,10 @@
         <div class="bento-card video-card">
           <video class="bento-img-full lazy-video" data-src="./assets\flaotingobejkcvtsfinal-ezgif.com-gif-maker.mp4" muted loop autoplay playsinline preload="none" aria-label="Buoyancy and Debris"></video>
           <div class="bento-content">
-            <h3>Buoyancy & Debris</h3>
+            <div class="feature-title-row" style="justify-content: flex-start;">
+              <h3>Buoyancy &amp; Debris</h3>
+              <span class="badge beta">Beta</span>
+            </div>
             <p>Scatter floating debris such as lily pads, logs, trash, and more, all with realistic bobbing, drifting, and collision.</p>
           </div>
         </div>
@@ -1943,10 +2468,6 @@
           <div class="water-label">Pond</div>
         </div>
 
-        <div class="water-card">
-          <img src=".\assets\Puddles.jpg" alt="Puddles" loading="lazy">
-          <div class="water-label">Puddles</div>
-        </div>
       </div>
 
       <p class="disclaimer-note"><strong style="color: #e4e4e7;">Water disclaimer:</strong> Water is for Cycles only.</p>
@@ -1956,6 +2477,11 @@
 
     <div class="section reveal" style="padding-top: 20px;">
       <h2>Included Asset Library.</h2>
+
+      <div style="text-align: center; margin: -6px 20px 24px;">
+        <span style="display: block; color: #ffffff; font-size: 2.35rem; line-height: 1; font-weight: 800; letter-spacing: -0.05em;">650+</span>
+        <span style="display: block; margin-top: 8px; color: #a1a1aa; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;">Unique Assets Included</span>
+      </div>
 
       <div class="text-card" style="margin-bottom: 40px;">
         <p>ScatterFlow includes a growing library of high-quality 3D assets, giving you a strong foundation to start building right away. You can explore everything included below.</p>
@@ -2009,11 +2535,6 @@
               <div class="cat-title">Construction Debris</div>
             </div>
 
-            <div class="cat-card main-vault-tab" data-target="cat-decals">
-              <img src="https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?auto=format&fit=crop&w=300&q=80" alt="Decals" loading="lazy">
-              <div class="cat-overlay"></div>
-              <div class="cat-title">Decals</div>
-            </div>
             </div>
           </div>
 
@@ -2030,6 +2551,12 @@
               <img src="./assets/Aloe.jpg" alt="Plants" loading="lazy">
               <div class="cat-overlay"></div>
               <div class="cat-title">Plants</div>
+            </div>
+
+            <div class="cat-card nature-tab vault-subcategory-tab" data-target="cat-nature-mushrooms">
+              <img src="./assets\Parasol_Mushroom.jpg" alt="Mushrooms" loading="lazy">
+              <div class="cat-overlay"></div>
+              <div class="cat-title">Mushrooms</div>
             </div>
 
             <div class="cat-card nature-tab vault-subcategory-tab" data-target="cat-nature-grass">
@@ -2146,6 +2673,10 @@
               <div class="asset-item-card"><img src="./assets/WhiteFir.jpg" alt="WhiteFir" loading="lazy"><div class="asset-item-title">WhiteFir</div></div>
               <div class="asset-item-card"><img src="./assets/WhiteFir_Dead.jpg" alt="WhiteFir_Dead" loading="lazy"><div class="asset-item-title">WhiteFir_Dead</div></div>
               <div class="asset-item-card"><img src="./assets/Willow.jpg" alt="Willow" loading="lazy"><div class="asset-item-title">Willow</div></div>
+              <div class="asset-item-card"><img src="./assets\BirchTrees.jpg" alt="WhiteFir_Dead" loading="lazy"><div class="asset-item-title">Birch Trees</div></div>
+              <div class="asset-item-card"><img src="./assets\BirchTrees_Dead.jpg" alt="Willow" loading="lazy"><div class="asset-item-title">Birch Trees_Dead</div></div>
+              <div class="asset-item-card"><img src="./assets\ElmTree.jpg" alt="WhiteFir_Dead" loading="lazy"><div class="asset-item-title">Elm Trees</div></div>
+              <div class="asset-item-card"><img src="./assets\ElmTree_Dead.jpg" alt="Willow" loading="lazy"><div class="asset-item-title">Elm Trees_Dead</div></div>
             </div>
 
             <div class="asset-grid-group" id="cat-nature-plants" style="display: none;">
@@ -2204,6 +2735,23 @@
               <div class="asset-item-card"><img src="./assets/WaterHicanth.jpg" alt="WaterHicanth" loading="lazy"><div class="asset-item-title">WaterHicanth</div></div>
               <div class="asset-item-card"><img src="./assets/WaterLillys.jpg" alt="WaterLillys" loading="lazy"><div class="asset-item-title">WaterLillys</div></div>
               <div class="asset-item-card"><img src="./assets/WoodMoss.jpg" alt="WoodMoss" loading="lazy"><div class="asset-item-title">WoodMoss</div></div>
+            </div>
+
+            <div class="asset-grid-group" id="cat-nature-mushrooms" style="display: none;">
+              <div class="asset-item-card"><img src="./assets\AmanitaMuscaria_Mushroom.jpg" alt="Forest Floor Mushroom Collection 1" loading="lazy"><div class="asset-item-title">Amanita Muscaria</div></div>
+              <div class="asset-item-card"><img src="./assets\AmanitaRubescens_Mushroom.jpg" alt="Forest Floor Mushroom Collection 2" loading="lazy"><div class="asset-item-title">Amanita Rubescens</div></div>
+              <div class="asset-item-card"><img src="./assets\BirchPolypore_Mushroom.jpg" alt="Forest Floor Mushroom Collection 3" loading="lazy"><div class="asset-item-title">Birch Polypore</div></div>
+              <div class="asset-item-card"><img src="./assets\BirchPolyporeV2_Mushroom.jpg" alt="Forest Floor Mushroom Collection 1" loading="lazy"><div class="asset-item-title">Birch Polypore V2</div></div>
+              <div class="asset-item-card"><img src="./assets\BracketFungus_Mushroom.jpg" alt="Forest Floor Mushroom Collection 2" loading="lazy"><div class="asset-item-title">Bracket Fungus</div></div>
+              <div class="asset-item-card"><img src="./assets\ConocybeApala_Mushroom.jpg" alt="Forest Floor Mushroom Collection 3" loading="lazy"><div class="asset-item-title">ConocybeApala</div></div>
+              <div class="asset-item-card"><img src="./assets\CortinariusVanduzerensis_Mushroom.jpg" alt="Forest Floor Mushroom Collection 1" loading="lazy"><div class="asset-item-title">ortinarius Vanduzerensis</div></div>
+              <div class="asset-item-card"><img src="./assets\FlyAgaric_Mushroom.jpg" alt="Forest Floor Mushroom Collection 2" loading="lazy"><div class="asset-item-title">Fly Agaric</div></div>
+              <div class="asset-item-card"><img src="./assets\GalerinaMarginata_Mushroom.jpg" alt="Forest Floor Mushroom Collection 3" loading="lazy"><div class="asset-item-title">Galerina Marginata</div></div>
+              <div class="asset-item-card"><img src="./assets\Parasol_Mushroom.jpg" alt="Forest Floor Mushroom Collection 1" loading="lazy"><div class="asset-item-title">Parasol</div></div>
+              <div class="asset-item-card"><img src="./assets\PleatedInkcap_Mushroom.jpg" alt="Forest Floor Mushroom Collection 2" loading="lazy"><div class="asset-item-title">Pleated Inkcap</div></div>
+              <div class="asset-item-card"><img src="./assets\RamariaStricta_Mushroom.jpg" alt="Forest Floor Mushroom Collection 3" loading="lazy"><div class="asset-item-title">RamariaStricta</div></div>
+              <div class="asset-item-card"><img src="./assets\TawnyFunnel_Mushroom.jpg" alt="Forest Floor Mushroom Collection 1" loading="lazy"><div class="asset-item-title">Tawny Funnel</div></div>
+              <div class="asset-item-card"><img src="./assets\ShaggyParasol_Mushroom.jpg" alt="Forest Floor Mushroom Collection 2" loading="lazy"><div class="asset-item-title">Shaggy Parasol</div></div>
             </div>
 
             <div class="asset-grid-group" id="cat-nature-grass" style="display: none;">
@@ -2370,7 +2918,6 @@
               <div class="asset-item-card"><img src="./assets/Tools.jpg" alt="Tools" loading="lazy"><div class="asset-item-title">Tools</div></div>
               <div class="asset-item-card"><img src="./assets/Wooden Planks.jpg" alt="Wooden Planks" loading="lazy"><div class="asset-item-title">Wooden Planks</div></div>
             </div>
-            <div class="asset-grid-group" id="cat-decals" style="display: none;"></div>
           </div>
         </div>
       </div>
@@ -2416,9 +2963,45 @@
           <img src="https://ui-avatars.com/api/?name=Contributor+Four&background=27272a&color=ffffff&size=128" alt="Contributor Four profile image" class="collaborator-avatar" loading="lazy">
           <div class="collaborator-info">
             <h3>PolyHaven</h3>
-            <p>Sticks</p>
+            <p>Various assets</p>
           </div>
-          <div class="collaborator-contribution">Sticks</div>
+          <div class="collaborator-contribution">Various Assets</div>
+        </div>
+
+        <div class="collaborator-card">
+          <img src="https://ui-avatars.com/api/?name=Ilyaken&background=27272a&color=ffffff&size=128" alt="Ilyaken profile image" class="collaborator-avatar" loading="lazy">
+          <div class="collaborator-info">
+            <h3><a href="https://superhivemarket.com/creators/blenderifyit" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">Ilyaken</a></h3>
+            <p>Mushrooms</p>
+          </div>
+          <div class="collaborator-contribution">Mushrooms</div>
+        </div>
+
+        <div class="collaborator-card">
+          <img src="https://ui-avatars.com/api/?name=Blueish&background=27272a&color=ffffff&size=128" alt="Blueish profile image" class="collaborator-avatar" loading="lazy">
+          <div class="collaborator-info">
+            <h3>Blueish</h3>
+            <p>Geometry Nodes</p>
+          </div>
+          <div class="collaborator-contribution">Geometry Nodes</div>
+        </div>
+
+        <div class="collaborator-card">
+          <img src="https://ui-avatars.com/api/?name=May3D&background=27272a&color=ffffff&size=128" alt="May3D profile image" class="collaborator-avatar" loading="lazy">
+          <div class="collaborator-info">
+            <h3>May3D</h3>
+            <p>Geometry Nodes</p>
+          </div>
+          <div class="collaborator-contribution">Geometry Nodes</div>
+        </div>
+
+        <div class="collaborator-card">
+          <img src="https://ui-avatars.com/api/?name=Mart0nnn&background=27272a&color=ffffff&size=128" alt="Mart0nnn profile image" class="collaborator-avatar" loading="lazy">
+          <div class="collaborator-info">
+            <h3>Mart0nnn</h3>
+            <p>Water system inspired by Mart0nnn</p>
+          </div>
+          <div class="collaborator-contribution">Water System Inspiration</div>
         </div>
       </div>
     </div>
@@ -2447,6 +3030,118 @@
     }, { threshold: 0.12 });
 
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+    const featureCycleWord = document.getElementById('featureCycleWord');
+    const featureCycleStage = document.querySelector('.feature-cycle-stage');
+    const pipelineIntro = document.querySelector('.pipeline-intro');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (featureCycleWord && featureCycleStage && pipelineIntro) {
+      const featureWords = [
+        'Biomes',
+        'Advanced Scattering',
+        'Dynamic Seasons',
+        'Procedural Wind',
+        'Water & Weather',
+        'Procedural Ivy'
+      ];
+
+      let cycleRunning = false;
+      let cycleToken = 0;
+
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      function showStaticFinal() {
+        featureCycleWord.textContent = 'Endless Environments.';
+        featureCycleWord.className = 'feature-cycle-word is-final';
+        featureCycleStage.classList.add('final-hit');
+      }
+
+      async function changeFeatureWord(word, token) {
+        featureCycleWord.classList.add('is-hidden');
+        await wait(115);
+        if (!cycleRunning || token !== cycleToken) return false;
+
+        featureCycleWord.textContent = word;
+        featureCycleWord.className = 'feature-cycle-word is-hidden';
+        featureCycleStage.classList.remove('final-hit');
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => featureCycleWord.classList.remove('is-hidden'));
+        });
+
+        await wait(165);
+        return cycleRunning && token === cycleToken;
+      }
+
+      async function landOnFinal(token) {
+        // Fade the last feature away first. The final line is only introduced once
+        // the previous transition has fully completed, avoiding competing states.
+        featureCycleWord.classList.add('is-hidden');
+        await wait(180);
+        if (!cycleRunning || token !== cycleToken) return false;
+
+        featureCycleStage.classList.remove('final-hit');
+        featureCycleWord.textContent = 'Endless Environments.';
+        featureCycleWord.className = 'feature-cycle-word is-final is-hidden';
+
+        await wait(40);
+        if (!cycleRunning || token !== cycleToken) return false;
+
+        featureCycleWord.classList.remove('is-hidden');
+        await wait(220);
+        if (!cycleRunning || token !== cycleToken) return false;
+
+        featureCycleStage.classList.add('final-hit');
+        return true;
+      }
+
+      async function runFeatureCycle(token) {
+        while (cycleRunning && token === cycleToken) {
+          featureCycleStage.classList.remove('final-hit');
+          featureCycleWord.classList.remove('is-final', 'is-hidden');
+          featureCycleWord.textContent = featureWords[0];
+          await wait(260);
+
+          for (const word of featureWords.slice(1)) {
+            if (!(await changeFeatureWord(word, token))) return;
+            await wait(105);
+          }
+
+          await wait(180);
+          if (!(await landOnFinal(token))) return;
+
+          // Let the payoff really land before the loop restarts.
+          await wait(3900);
+
+          if (!cycleRunning || token !== cycleToken) return;
+          featureCycleStage.classList.remove('final-hit');
+          featureCycleWord.classList.add('is-hidden');
+          await wait(560);
+          featureCycleWord.className = 'feature-cycle-word is-hidden';
+        }
+      }
+
+      if (reduceMotion) {
+        showStaticFinal();
+      } else {
+        const featureCycleObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && !cycleRunning) {
+              cycleRunning = true;
+              cycleToken += 1;
+              runFeatureCycle(cycleToken);
+            } else if (!entry.isIntersecting && cycleRunning) {
+              cycleRunning = false;
+              cycleToken += 1;
+              showStaticFinal();
+            }
+          });
+        }, { threshold: 0.35 });
+
+        featureCycleObserver.observe(pipelineIntro);
+      }
+    }
 
     function setupSlider(sliderId, btnLeftId, btnRightId) {
       const slider = document.getElementById(sliderId);
